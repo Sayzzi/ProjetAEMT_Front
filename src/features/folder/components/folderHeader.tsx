@@ -5,7 +5,7 @@ interface InputData {
     noteTitle: string
 }
 
-export function FolderHeader({ onCreateFolder }) {
+export function FolderHeader({ onCreateFolder, currentFolderId  }) {
 
     const [openInput, setOpenInput] = useState<"folder" | "note" | null>(null);
 
@@ -19,7 +19,7 @@ export function FolderHeader({ onCreateFolder }) {
     function createFolder() {
         onCreateFolder({
             id_user: 1, //à remplacer avec le user connecté
-            id_parent_folder: null,//à remplacer avec le current folder
+            id_parent_folder: currentFolderId,//à remplacer avec le current folder
             title: inputData.folderTitle
         });
     }

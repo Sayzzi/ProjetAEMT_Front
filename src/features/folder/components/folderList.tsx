@@ -9,6 +9,7 @@ const folderService = new FakeFolderService();
 
 export function FolderList() {
     const [tree, setTree] = useState<FolderNode[]>([]);
+    const [currentFolderId, setCurrentFolderId] = useState<number | null>(null);
 
     useEffect(() => {
         const folders = folderService.getFoldersByUser(1);
@@ -30,8 +31,8 @@ export function FolderList() {
     return (
         <div>
             <h2>Mes dossiers</h2>
-            <FolderHeader onCreateFolder={handleCreateFolder} />
-            <FolderTreeComponent nodes={tree} />
+            <FolderHeader onCreateFolder={handleCreateFolder} currentFolderId={currentFolderId}/>
+            <FolderTreeComponent nodes={tree} onSelectFolder={setCurrentFolderId}/>
         </div>
     );
 }
