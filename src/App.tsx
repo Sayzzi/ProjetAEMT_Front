@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import './App.css'
-import {LoginComponent} from "./features/note/components/loginComponent.tsx";
+import {LoginFormComponent} from "./features/auth/components/LoginFormComponent.tsx";
+import {FolderList} from "./features/folder/components/folderList.tsx";
 
 function App() {
 
@@ -8,8 +9,8 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<LoginComponent/>}></Route>
-                <Route path="login" element={<LoginComponent/>}></Route>
+                <Route path="/" element={<FolderList/>}></Route>
+                <Route path="login" element={<LoginFormComponent/>}></Route>
             </Routes>
         </BrowserRouter>
     )
