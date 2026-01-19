@@ -1,26 +1,20 @@
-// Service pour les appels API auth
-// Base URL: import.meta.env.VITE_API_URL
+import type { LoginCommand } from './commands/login-command.ts';
+import type { RegisterCommand } from './commands/register-command.ts';
+import type { User } from '../../types/user.ts';
 
-import { LoginCommand } from './commands/login-command';
-import { RegisterCommand } from './commands/register-command';
-import { User } from '../../types/user.ts';
-
-const API_URL = import.meta.env.VITE_API_URL;
+const USER_API_URL = import.meta.env.VITE_API_URL + "/users";
 
 // POST /users - Inscription
-export async function register(command: RegisterCommand): Promise<User> {
-    // TODO: fetch POST vers /users
-    // - headers: Content-Type: application/json
-    // - body: JSON.stringify(command)
-    // - retourne response.json()
-    throw new Error('Not implemented');
+export const register: (command: RegisterCommand) => Promise<User> = async (command: RegisterCommand) => {
+    const response = await fetch(USER_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(command),
+    });
+    return response.json();
 }
 
 // POST /users/login - Connexion
-export async function login(command: LoginCommand): Promise<User> {
-    // TODO: fetch POST vers /users/login
-    // - headers: Content-Type: application/json
-    // - body: JSON.stringify(command)
-    // - retourne response.json()
-    throw new Error('Not implemented');
+export const login: (command: LoginCommand) => Promise<User> = async (command: LoginCommand) => {
+
 }
