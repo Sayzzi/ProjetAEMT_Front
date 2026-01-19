@@ -1,6 +1,7 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom"
+import {BrowserRouter, Route, Routes} from "react-router-dom"
 import './App.css'
-import {LoginComponent} from "./features/note/components/loginComponent.tsx";
+import AddNote from "./features/note/components/addNote.tsx";
+
 
 function App() {
 
@@ -8,8 +9,7 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<LoginComponent/>}></Route>
-                <Route path="login" element={<LoginComponent/>}></Route>
+                <Route path="/" element={<AddNote userId={0} folderId={0}/>}/>
             </Routes>
         </BrowserRouter>
     )
