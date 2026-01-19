@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import './App.css'
-import {LoginComponent} from "./features/note/components/loginComponent.tsx";
+import {RegisterFormComponent} from "./features/auth/components/RegisterFormComponent.tsx";
 
 function App() {
 
@@ -8,8 +8,8 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<LoginComponent/>}></Route>
-                <Route path="login" element={<LoginComponent/>}></Route>
+                <Route path="/" element={<RegisterFormComponent />} />
+                <Route path="/register" element={<RegisterFormComponent />} />
             </Routes>
         </BrowserRouter>
     )
