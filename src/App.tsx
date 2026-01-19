@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import './App.css'
-import {LoginComponent} from "./features/components/loginComponent";
+import {LoginComponent} from "./features/note/components/loginComponent.tsx";
 
 function App() {
 
