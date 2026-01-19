@@ -3,7 +3,7 @@
 
 import { LoginCommand } from './commands/login-command';
 import { RegisterCommand } from './commands/register-command';
-import { User } from '../types/user';
+import { User } from '../../types/user.ts';
 
 const API_URL = import.meta.env.VITE_API_URL;
 

@@ -2,7 +2,7 @@
 // Pattern: createContext + useReducer
 
 import { createContext, useContext, useReducer, ReactNode } from 'react';
-import { User } from '../types/user';
+import { User } from '../../types/user.ts';
 
 // State
 interface AuthState {
