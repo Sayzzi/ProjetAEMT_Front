@@ -5,23 +5,33 @@ import {buildFolderTree} from "../utils/buildFolderTree.tsx";
 import {FolderTreeComponent} from "./folderTreeComponent.tsx";
 import {FolderHeader} from "./folderHeader.tsx";
 
-
-const service = new FakeFolderService();
+const folderService = new FakeFolderService();
 
 export function FolderList() {
     const [tree, setTree] = useState<FolderNode[]>([]);
 
     useEffect(() => {
-        const folders = service.getFoldersByUser(1);
+        const folders = folderService.getFoldersByUser(1);
         const folderTree = buildFolderTree(folders);
         setTree(folderTree);
     }, []);
 
+    function refreshTree() {
+        const flat = folderService.getFoldersByUser(1);
+        const structured = buildFolderTree(flat);
+        setTree(structured);
+    }
+
+    function handleCreateFolder(data) {
+        folderService.createFolder(data);
+        refreshTree();
+    }
+
     return (
         <div>
             <h2>Mes dossiers</h2>
-            <FolderHeader></FolderHeader>
-    <FolderTreeComponent nodes={tree} />
-    </div>
-);
+            <FolderHeader onCreateFolder={handleCreateFolder} />
+            <FolderTreeComponent nodes={tree} />
+        </div>
+    );
 }

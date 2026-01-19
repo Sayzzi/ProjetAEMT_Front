@@ -13,13 +13,20 @@ export class FakeFolderService {
         {
             id: 2,
             id_user: 1,
-            id_parent_folder: 1,
+            id_parent_folder: null,
             title: "Projets",
             created_at: new Date().toISOString(),
-        }
+        },
+        {
+            id: 3,
+            id_user: 1,
+            id_parent_folder: 2,
+            title: "Projets test",
+            created_at: new Date().toISOString(),
+        },
     ];
 
-    private autoIncrementId = 3;
+    private autoIncrementId = 4;
 
     // Récupère tous les dossiers d’un utilisateur
     getFoldersByUser(id_user: number): Folder[] {
