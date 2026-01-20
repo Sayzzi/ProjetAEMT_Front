@@ -1,155 +1,51 @@
-// useState: hook React pour créer des variables d'état
-// Quand l'état change, le composant se re-render (se réaffiche)
-import { useState } from 'react';
+// Composant formulaire de connexion
+// - Champs: userName, password
+// - Bouton: Se connecter
+// - Appelle auth-service.login()
+// - Dispatch action 'login' dans AuthContext
+import {type ChangeEvent, useState} from 'react';
 
-// useNavigate: hook de React Router pour naviguer entre les pages
-// Exemple: navigate('/notes') redirige vers la page /notes
-import { useNavigate } from 'react-router-dom';
+interface FormData {
+    username: string
+    password: string
+}
 
-// Fonction qui appelle l'API backend POST /api/users/login
-// Elle envoie { userName, password } et retourne { id, userName }
-import { login } from '../services/auth-service.ts';
-
-// Hook personnalisé pour accéder au contexte d'authentification
-// Permet de lire et modifier l'utilisateur connecté globalement
-import { useAuth } from '../contexts/AuthContext.tsx';
-
-// ============================================
-// COMPOSANT LOGIN FORM
-// ============================================
 
 export function LoginFormComponent() {
 
-    // ============================================
-    // ÉTATS (variables qui déclenchent un re-render quand elles changent)
-    // ============================================
+    //Signaux
+    const [formData, setFormData] = useState<FormData>({
+        username: '',
+        password: '',
+    })
 
-    // userName: contient ce que l'utilisateur tape dans le champ "nom d'utilisateur"
-    // setUserName: fonction pour modifier userName
-    // useState('') : valeur initiale = chaîne vide
-    const [userName, setUserName] = useState('');
+    // Met à jour l'état du formulaire à chaque frappe dans un input
+    //Le champ modifié est identifié grâce à son attribut name
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const {name, value} = e.target
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }))
+    }
 
-    // password: contient ce que l'utilisateur tape dans le champ "mot de passe"
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
 
-    // ============================================
-    // HOOKS (fonctions spéciales de React/React Router)
-    // ============================================
-
-    // navigate: fonction pour changer de page sans recharger
-    // Utilisation: navigate('/chemin')
-    const navigate = useNavigate();
-
-    // useAuth(): récupère le contexte d'authentification
-    // setUser: fonction pour stocker l'utilisateur dans le contexte global
-    // Après setUser(), tous les composants peuvent accéder à l'utilisateur
-    const { setUser } = useAuth();
-
-    // ============================================
-    // FONCTION DE SOUMISSION DU FORMULAIRE
-    // ============================================
-
-    // async: cette fonction contient du code asynchrone (await)
-    // e: l'événement du formulaire (contient des infos sur la soumission)
     const handleSubmit = async (e: React.FormEvent) => {
-
-        // Empêche le comportement par défaut du formulaire
-        // Sans ça, la page se recharge et on perd tout
         e.preventDefault();
-
-        // Efface l'erreur précédente avant de réessayer
-        setError('');
-        try {
-            // ============================================
-            // 1. APPEL API - Connexion
-            // ============================================
-
-            // Appelle POST http://localhost:8080/api/users/login
-            // Envoie: { userName: "john", password: "123" }
-            // Reçoit: { id: 1, userName: "john" }
-            //
-            // await: attend que la requête soit terminée avant de continuer
-            // Sans await, le code continuerait sans attendre la réponse
-            const user = await login({ userName, password });
-
-            // ============================================
-            // 2. STOCKAGE - Sauvegarde l'utilisateur dans le contexte
-            // ============================================
-
-            // setUser() stocke l'utilisateur dans AuthContext
-            // Maintenant, TOUS les composants de l'app peuvent faire:
-            //   const { user } = useAuth();
-            //   console.log(user.id);  // 1
-            //   console.log(user.userName);  // "john"
-            setUser(user);
-
-            // ============================================
-            // 3. REDIRECTION - Envoie l'utilisateur vers une autre page
-            // ============================================
-
-            // Change l'URL vers '/' (page d'accueil)
-            // Tu peux changer vers '/notes' quand la page existera
-            navigate('/');
-
-        } catch (err) {
-
-            // Si login() échoue (mauvais mot de passe, utilisateur inexistant)
-            // On affiche un message d'erreur à l'utilisateur
-            setError('Nom d\'utilisateur ou mot de passe incorrect');
-        }
+        // TODO:
+        // 1. Appeler login({ userName, password })
+        // 2. dispatch({ type: 'login', user: result })
+        // 3. Rediriger vers /notes
+        alert(formData.username +"Fonctionnelle" + formData.password)
     };
 
-    // ============================================
-    // Ce qui s'affiche à l'écran
-    // ============================================
-
     return (
-        // form: élément HTML formulaire
-        // onSubmit: quand l'utilisateur clique sur "Se connecter" ou appuie Entrée
         <form onSubmit={handleSubmit}>
-
-            <h2>Connexion</h2>
-
-            {/*
-                {error && <p>...</p>} signifie:
-                - Si error est vide (""), rien ne s'affiche
-                - Si error contient quelque chose, le <p> s'affiche
-
-                C'est équivalent à:
-                if (error) {
-                    return <p>...</p>
-                }
-            */}
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-
             <div>
-                <label>Nom d'utilisateur</label>
-                <input
-                    type="text"
-                    // value: lie l'input à l'état userName
-                    // L'input affiche toujours la valeur de userName
-                    value={userName}
-
-                    // onChange: appelé à CHAQUE frappe de clavier
-                    // e.target.value = le nouveau contenu de l'input
-                    // setUserName() met à jour l'état, ce qui re-render le composant
-                    onChange={(e) => setUserName(e.target.value)}
-                    required
-                />
+                <input type="text" name="username" onChange={handleChange} value={formData.username}/>
             </div>
-
-            {/* ============================================ */}
-            {/* CHAMP MOT DE PASSE */}
-            {/* ============================================ */}
             <div>
-                <label>Mot de passe</label>
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
+                <input type="text" name="password" onChange={handleChange} value={formData.password}/>
             </div>
             <button type="submit">Se connecter</button>
         </form>
