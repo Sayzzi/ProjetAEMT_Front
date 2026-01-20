@@ -1,6 +1,6 @@
 // Routes pour l'authentification
 // /login -> LoginFormComponent
-// /register -> RegisterFormComponent
+// /createFolder -> RegisterFormComponent
 import type {RouteObject} from 'react-router-dom';
 import { LoginFormComponent } from './components/LoginFormComponent';
 import { RegisterFormComponent } from './components/RegisterFormComponent';
@@ -11,7 +11,7 @@ export const authRoutes: RouteObject[] = [
         element: <LoginFormComponent />,
     },
     {
-        path: '/register',
+        path: '/createFolder',
         element: <RegisterFormComponent />,
     },
 ];

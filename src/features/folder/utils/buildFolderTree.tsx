@@ -1,9 +1,9 @@
-import type {Folder} from "../../types/folder.ts";
 import type {FolderNode} from "../../types/folderNode.ts";
-import type Note from "../../types/note.ts";
+import type {FolderDto} from "../../types/dto/folderDto.ts";
+import type {NoteDto} from "../../types/dto/noteDto.ts";
 
 // Transforme une liste plate de dossiers et notes en arbre hiérarchique
-export function buildFolderTree(folders: Folder[], notes: Note[] = []): FolderNode[] {
+export function buildFolderTree(folders: FolderDto[], notes: NoteDto[] = []): FolderNode[] {
     // Map pour accéder rapidement à un dossier par son ID
     const folderMap = new Map<number, FolderNode>();
 

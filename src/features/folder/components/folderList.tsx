@@ -7,8 +7,11 @@ import {FolderTreeComponent} from "./folderTreeComponent.tsx";
 import {FolderHeader} from "./folderHeader.tsx";
 import {MarkdownEditor} from "./MarkdownEditor.tsx";
 import "./folderList.css";
-
-const folderService = new FakeFolderService();
+import {FolderService} from "../services/folderService.tsx";
+import {useAuth} from "../../auth/contexts/AuthContext.tsx";
+import {postNote} from "../../note/service/note-service.tsx";
+const fakeFolderService = new FakeFolderService();
+const folderService = new FolderService();
 
 export function FolderList() {
     // États
@@ -18,46 +21,56 @@ export function FolderList() {
     const [editingTitle, setEditingTitle] = useState(false);
     const [titleValue, setTitleValue] = useState("");
     const [contentValue, setContentValue] = useState("");
+    const {user} = useAuth();
 
-    // Charge les dossiers au démarrage
     useEffect(() => {
-        const folders = folderService.getFoldersByUser(1);
-        const notes = folderService.getNotesByUser(1);
-        setTree(buildFolderTree(folders, notes));
+        refreshTree();
     }, []);
 
     // Rafraîchit l'arbre
-    function refreshTree() {
-        const folders = folderService.getFoldersByUser(1);
-        const notes = folderService.getNotesByUser(1);
-        setTree(buildFolderTree(folders, notes));
+    async function refreshTree() {
+        const { folders, notes } = await folderService.getAllFoldersAndNotesByUser(user.id);
+        const tree = buildFolderTree(folders, notes);
+        setTree(tree);
     }
 
     // Crée un dossier
     function handleCreateFolder(data) {
         folderService.createFolder(data);
+        //fakeFolderService.createFolder(data);
         refreshTree();
     }
 
     // Crée une note
     function handleCreateNote(data) {
-        const newNote = folderService.createNote(data);
-        refreshTree();
-        setSelectedNote(newNote);
-        setTitleValue(newNote.title || "");
-        setContentValue(newNote.content || "");
+
+        const createNote = async () => {
+            try {
+                const createdNote = await postNote(data);
+                console.log("Note créée :", createdNote);
+
+                refreshTree();
+                setSelectedNote(createdNote);
+                setTitleValue(createdNote.title || "");
+                setContentValue(createdNote.content || "");
+            } catch (error) {
+                console.error("Erreur lors de la création de la note", error);
+            }
+        };
+        createNote();
     }
+
 
     // Supprime un dossier
     function handleDeleteFolder(id: number) {
-        folderService.deleteFolder(id);
+        fakeFolderService.deleteFolder(id);
         refreshTree();
     }
 
     // Sélectionne une note
     function handleSelectNote(note: Note) {
         if (selectedNote && contentValue !== selectedNote.content) {
-            folderService.updateNote(selectedNote.id!, { content: contentValue });
+            fakeFolderService.updateNote(selectedNote.id!, { content: contentValue });
             refreshTree();
         }
         setSelectedNote(note);
@@ -69,7 +82,7 @@ export function FolderList() {
     // Sauvegarde le titre
     function saveTitle() {
         if (selectedNote && titleValue.trim()) {
-            folderService.updateNote(selectedNote.id!, { title: titleValue });
+            fakeFolderService.updateNote(selectedNote.id!, { title: titleValue });
             setSelectedNote({ ...selectedNote, title: titleValue });
             refreshTree();
         }
@@ -80,7 +93,7 @@ export function FolderList() {
     function handleContentChange(newContent: string) {
         setContentValue(newContent);
         if (selectedNote) {
-            folderService.updateNote(selectedNote.id!, { content: newContent });
+            fakeFolderService.updateNote(selectedNote.id!, { content: newContent });
         }
     }
 
