@@ -1,159 +1,81 @@
-/* ==============================================
-   STYLES DE L'ÉDITEUR MARKDOWN WYSIWYG
-   ==============================================
-   Ces styles s'appliquent à l'éditeur tiptap
-   et aux éléments HTML générés (titres, listes, etc.)
-   ============================================== */
+/* Éditeur Markdown */
 
-/* Container principal de l'éditeur */
 .markdown-editor {
-    background: #2d2d2d;       /* Fond sombre */
-    border-radius: 8px;        /* Coins arrondis */
-    min-height: 400px;         /* Hauteur minimum */
-    padding: 16px;             /* Espacement intérieur */
+    background: #2d2d2d;
+    border-radius: 8px;
+    min-height: 400px;
+    padding: 16px;
 }
 
-/* Zone d'édition tiptap (là où on tape) */
 .markdown-editor .tiptap {
-    outline: none;             /* Enlève le contour bleu au focus */
-    min-height: 350px;         /* Hauteur minimum de la zone de texte */
-    line-height: 1.8;          /* Espacement entre les lignes */
+    outline: none;
+    min-height: 350px;
+    line-height: 1.8;
 }
 
-/* ==============================================
-   PLACEHOLDER
-   ==============================================
-   Texte affiché quand l'éditeur est vide */
+/* Placeholder */
 .markdown-editor .tiptap p.is-editor-empty:first-child::before {
-    content: attr(data-placeholder);  /* Récupère le texte du placeholder */
-    color: #666;                      /* Couleur grise */
-    pointer-events: none;             /* Ignore les clics */
-    float: left;                      /* Positionne à gauche */
-    height: 0;                        /* Ne prend pas de place */
+    content: attr(data-placeholder);
+    color: #666;
+    pointer-events: none;
+    float: left;
+    height: 0;
 }
 
-/* ==============================================
-   TITRES (H1, H2, H3)
-   ==============================================
-   Créés avec # ## ### au début d'une ligne */
+/* Titres */
+.markdown-editor h1 { font-size: 1.8rem; color: #ff6b1a; margin: 16px 0; }
+.markdown-editor h2 { font-size: 1.5rem; color: #ff6b1a; margin: 14px 0; }
+.markdown-editor h3 { font-size: 1.2rem; color: #ff6b1a; margin: 12px 0; }
 
-/* Titre H1 (créé avec #) */
-.markdown-editor h1 {
-    font-size: 1.8rem;         /* Grande taille */
-    color: #ff6b1a;            /* Couleur orange Halloween */
-    margin: 16px 0;            /* Espacement haut/bas */
+.markdown-editor p { margin: 8px 0; }
+
+/* Gras et italique */
+.markdown-editor strong { color: #ff8c42; }
+.markdown-editor em { font-style: italic; }
+
+/* Listes */
+.markdown-editor ul,
+.markdown-editor ol {
+    margin-left: 24px;
+    margin-bottom: 8px;
 }
 
-/* Titre H2 (créé avec ##) */
-.markdown-editor h2 {
-    font-size: 1.5rem;         /* Taille moyenne */
-    color: #ff6b1a;            /* Couleur orange */
-    margin: 14px 0;
+.markdown-editor li { margin: 4px 0; }
+
+/* Code */
+.markdown-editor code {
+    background: #1a1a1a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    color: #ff6b1a;
 }
 
-/* Titre H3 (créé avec ###) */
-.markdown-editor h3 {
-    font-size: 1.2rem;         /* Petite taille */
-    color: #ff6b1a;            /* Couleur orange */
+.markdown-editor pre {
+    background: #1a1a1a;
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
     margin: 12px 0;
 }
 
-/* ==============================================
-   PARAGRAPHES
-   ============================================== */
-.markdown-editor p {
-    margin: 8px 0;             /* Espacement entre paragraphes */
-}
-
-/* ==============================================
-   TEXTE EN GRAS ET ITALIQUE
-   ==============================================
-   Créés avec **texte** et *texte* */
-
-/* Gras (créé avec **texte**) */
-.markdown-editor strong {
-    color: #ff8c42;            /* Orange plus clair pour ressortir */
-}
-
-/* Italique (créé avec *texte*) */
-.markdown-editor em {
-    color: #e8e8e8;            /* Couleur texte normale */
-    font-style: italic;        /* Style italique */
-}
-
-/* ==============================================
-   LISTES
-   ==============================================
-   Listes à puces créées avec - au début
-   Listes numérotées créées avec 1. au début */
-
-/* Listes à puces et numérotées */
-.markdown-editor ul,
-.markdown-editor ol {
-    margin-left: 24px;         /* Décalage à gauche */
-    margin-bottom: 8px;        /* Espacement en bas */
-}
-
-/* Éléments de liste */
-.markdown-editor li {
-    margin: 4px 0;             /* Petit espacement entre items */
-}
-
-/* ==============================================
-   CODE
-   ==============================================
-   Code inline créé avec `code`
-   Bloc de code créé avec ``` */
-
-/* Code inline (créé avec `code`) */
-.markdown-editor code {
-    background: #1a1a1a;       /* Fond très sombre */
-    padding: 2px 6px;          /* Petit padding */
-    border-radius: 4px;        /* Coins arrondis */
-    font-family: monospace;    /* Police à chasse fixe */
-    color: #ff6b1a;            /* Couleur orange */
-}
-
-/* Bloc de code (créé avec ```) */
-.markdown-editor pre {
-    background: #1a1a1a;       /* Fond très sombre */
-    padding: 16px;             /* Padding confortable */
-    border-radius: 8px;        /* Coins arrondis */
-    overflow-x: auto;          /* Scroll horizontal si nécessaire */
-    margin: 12px 0;            /* Espacement haut/bas */
-}
-
-/* Code dans un bloc (reset les styles du code inline) */
 .markdown-editor pre code {
-    padding: 0;                /* Pas de padding supplémentaire */
-    background: transparent;   /* Fond transparent */
+    padding: 0;
+    background: transparent;
 }
 
-/* ==============================================
-   CITATIONS
-   ==============================================
-   Créées avec > au début d'une ligne */
+/* Citation */
 .markdown-editor blockquote {
-    border-left: 4px solid #ff6b1a;  /* Barre orange à gauche */
-    padding-left: 16px;              /* Décalage du texte */
-    margin: 12px 0;                  /* Espacement haut/bas */
-    color: #888;                     /* Texte gris */
+    border-left: 4px solid #ff6b1a;
+    padding-left: 16px;
+    margin: 12px 0;
+    color: #888;
 }
 
-/* ==============================================
-   TEXTE BARRÉ
-   ==============================================
-   Créé avec ~~texte~~ */
-.markdown-editor s {
-    color: #666;               /* Couleur grise pour texte barré */
-}
+.markdown-editor s { color: #666; }
 
-/* ==============================================
-   LIGNE HORIZONTALE
-   ==============================================
-   Créée avec --- */
 .markdown-editor hr {
-    border: none;                    /* Enlève la bordure par défaut */
-    border-top: 1px solid #444;      /* Ligne grise */
-    margin: 16px 0;                  /* Espacement haut/bas */
+    border: none;
+    border-top: 1px solid #444;
+    margin: 16px 0;
 }
