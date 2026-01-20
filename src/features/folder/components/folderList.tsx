@@ -28,11 +28,26 @@ export function FolderList() {
         refreshTree();
     }
 
+    function handleDeleteFolder(id: number) {
+        folderService.deleteFolder(id);   // suppression récursive
+        refreshTree();                    // reconstruit l’arbre
+    }
+
     return (
         <div>
             <h2>Mes dossiers</h2>
-            <FolderHeader onCreateFolder={handleCreateFolder} currentFolderId={currentFolderId}/>
-            <FolderTreeComponent nodes={tree} onSelectFolder={setCurrentFolderId}/>
+
+            <FolderHeader
+                onCreateFolder={handleCreateFolder}
+                currentFolderId={currentFolderId}
+            />
+
+            <FolderTreeComponent
+                nodes={tree}
+                onSelectFolder={setCurrentFolderId}
+                currentFolderId={currentFolderId}
+                onDeleteFolder={handleDeleteFolder}
+            />
         </div>
     );
 }
