@@ -1,26 +1,189 @@
-// Composant formulaire de connexion
-// - Champs: userName, password
-// - Bouton: Se connecter
-// - Appelle auth-service.login()
-// - Dispatch action 'login' dans AuthContext
+// ============================================
+// IMPORTS
+// ============================================
 
+// useState: hook React pour créer des variables d'état
+// Quand l'état change, le composant se re-render (se réaffiche)
 import { useState } from 'react';
 
+// useNavigate: hook de React Router pour naviguer entre les pages
+// Exemple: navigate('/notes') redirige vers la page /notes
+import { useNavigate } from 'react-router-dom';
+
+// Fonction qui appelle l'API backend POST /api/users/login
+// Elle envoie { userName, password } et retourne { id, userName }
+import { login } from '../services/auth-service.ts';
+
+// Hook personnalisé pour accéder au contexte d'authentification
+// Permet de lire et modifier l'utilisateur connecté globalement
+import { useAuth } from '../contexts/AuthContext.tsx';
+
+// ============================================
+// COMPOSANT LOGIN FORM
+// ============================================
+
 export function LoginFormComponent() {
+
+    // ============================================
+    // ÉTATS (variables qui déclenchent un re-render quand elles changent)
+    // ============================================
+
+    // userName: contient ce que l'utilisateur tape dans le champ "nom d'utilisateur"
+    // setUserName: fonction pour modifier userName
+    // useState('') : valeur initiale = chaîne vide
     const [userName, setUserName] = useState('');
+
+    // password: contient ce que l'utilisateur tape dans le champ "mot de passe"
     const [password, setPassword] = useState('');
 
+    // error: contient le message d'erreur à afficher (si connexion échoue)
+    const [error, setError] = useState('');
+
+    // ============================================
+    // HOOKS (fonctions spéciales de React/React Router)
+    // ============================================
+
+    // navigate: fonction pour changer de page sans recharger
+    // Utilisation: navigate('/chemin')
+    const navigate = useNavigate();
+
+    // useAuth(): récupère le contexte d'authentification
+    // setUser: fonction pour stocker l'utilisateur dans le contexte global
+    // Après setUser(), tous les composants peuvent accéder à l'utilisateur
+    const { setUser } = useAuth();
+
+    // ============================================
+    // FONCTION DE SOUMISSION DU FORMULAIRE
+    // ============================================
+
+    // async: cette fonction contient du code asynchrone (await)
+    // e: l'événement du formulaire (contient des infos sur la soumission)
     const handleSubmit = async (e: React.FormEvent) => {
+
+        // Empêche le comportement par défaut du formulaire
+        // Sans ça, la page se recharge et on perd tout
         e.preventDefault();
-        // TODO:
-        // 1. Appeler login({ userName, password })
-        // 2. dispatch({ type: 'login', user: result })
-        // 3. Rediriger vers /notes
+
+        // Efface l'erreur précédente avant de réessayer
+        setError('');
+
+        // try/catch: permet de gérer les erreurs
+        // Si le code dans try échoue, on va dans catch
+        try {
+            // ============================================
+            // 1. APPEL API - Connexion
+            // ============================================
+
+            // Appelle POST http://localhost:8080/api/users/login
+            // Envoie: { userName: "john", password: "123" }
+            // Reçoit: { id: 1, userName: "john" }
+            //
+            // await: attend que la requête soit terminée avant de continuer
+            // Sans await, le code continuerait sans attendre la réponse
+            const user = await login({ userName, password });
+
+            // ============================================
+            // 2. STOCKAGE - Sauvegarde l'utilisateur dans le contexte
+            // ============================================
+
+            // setUser() stocke l'utilisateur dans AuthContext
+            // Maintenant, TOUS les composants de l'app peuvent faire:
+            //   const { user } = useAuth();
+            //   console.log(user.id);  // 1
+            //   console.log(user.userName);  // "john"
+            setUser(user);
+
+            // ============================================
+            // 3. REDIRECTION - Envoie l'utilisateur vers une autre page
+            // ============================================
+
+            // Change l'URL vers '/' (page d'accueil)
+            // Tu peux changer vers '/notes' quand la page existera
+            navigate('/');
+
+        } catch (err) {
+            // ============================================
+            // GESTION D'ERREUR
+            // ============================================
+
+            // Si login() échoue (mauvais mot de passe, utilisateur inexistant)
+            // On affiche un message d'erreur à l'utilisateur
+            setError('Nom d\'utilisateur ou mot de passe incorrect');
+        }
     };
 
+    // ============================================
+    // RENDU JSX - Ce qui s'affiche à l'écran
+    // ============================================
+
     return (
+        // form: élément HTML formulaire
+        // onSubmit: quand l'utilisateur clique sur "Se connecter" ou appuie Entrée
         <form onSubmit={handleSubmit}>
-            {/* TODO: Inputs userName, password + bouton submit */}
+
+            <h2>Connexion</h2>
+
+            {/* ============================================ */}
+            {/* AFFICHAGE CONDITIONNEL DE L'ERREUR */}
+            {/* ============================================ */}
+
+            {/*
+                {error && <p>...</p>} signifie:
+                - Si error est vide (""), rien ne s'affiche
+                - Si error contient quelque chose, le <p> s'affiche
+
+                C'est équivalent à:
+                if (error) {
+                    return <p>...</p>
+                }
+            */}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+
+            {/* ============================================ */}
+            {/* CHAMP NOM D'UTILISATEUR */}
+            {/* ============================================ */}
+            <div>
+                <label>Nom d'utilisateur</label>
+                <input
+                    type="text"
+                    // value: lie l'input à l'état userName
+                    // L'input affiche toujours la valeur de userName
+                    value={userName}
+
+                    // onChange: appelé à CHAQUE frappe de clavier
+                    // e.target.value = le nouveau contenu de l'input
+                    // setUserName() met à jour l'état, ce qui re-render le composant
+                    onChange={(e) => setUserName(e.target.value)}
+
+                    // required: le navigateur empêche la soumission si le champ est vide
+                    required
+                />
+            </div>
+
+            {/* ============================================ */}
+            {/* CHAMP MOT DE PASSE */}
+            {/* ============================================ */}
+            <div>
+                <label>Mot de passe</label>
+                <input
+                    // type="password" masque les caractères (●●●●●)
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                />
+            </div>
+
+            {/* ============================================ */}
+            {/* BOUTON SOUMETTRE */}
+            {/* ============================================ */}
+
+            {/*
+                type="submit" est important!
+                - Déclenche l'événement onSubmit du formulaire
+                - Permet aussi de soumettre avec la touche Entrée
+            */}
+            <button type="submit">Se connecter</button>
         </form>
     );
 }
