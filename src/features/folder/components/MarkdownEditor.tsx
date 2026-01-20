@@ -1,7 +1,7 @@
-import { useEditor, EditorContent } from '@tiptap/react';
+import {EditorContent, useEditor} from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import './MarkdownEditor.css';
 
 interface Props {
@@ -17,21 +17,26 @@ interface Stats {
 }
 
 // Éditeur WYSIWYG : **gras**, *italique*, # titre, - liste
-export function MarkdownEditor({ content, onChange }: Props) {
-    const [stats, setStats] = useState<Stats>({ lines: 0, words: 0, chars: 0 });
+function MarkdownEditor({content, onChange}: Props) {
+
+    const [stats, setStats] = useState<Stats>({lines: 0, words: 0, chars: 0});
+    const [locked, setLocked] = useState(false);
 
     // Calcule les stats à partir du texte
     function updateStats(text: string) {
         const lines = text.split('\n').filter(line => line.trim()).length;
         const words = text.split(/\s+/).filter(w => w.trim()).length;
         const chars = text.replace(/\s/g, '').length;
-        setStats({ lines, words, chars });
+        setStats({lines, words, chars});
     }
 
     const editor = useEditor({
+
+        editable: !locked,
+
         extensions: [
             StarterKit.configure({
-                heading: { levels: [1, 2, 3] },
+                heading: {levels: [1, 2, 3]},
                 bulletList: {},
                 orderedList: {},
                 blockquote: {},
@@ -46,13 +51,15 @@ export function MarkdownEditor({ content, onChange }: Props) {
             }),
         ],
         content: content,
-        onUpdate: ({ editor }) => {
+        onUpdate: ({editor}) => {
             const html = editor.getHTML();
             const text = editor.getText();
             onChange(html);
             updateStats(text);
         },
+
     });
+
 
     // Synchronise le contenu quand on change de note
     useEffect(() => {
@@ -62,9 +69,29 @@ export function MarkdownEditor({ content, onChange }: Props) {
         }
     }, [content, editor]);
 
+    const toggleLocked = () => {
+
+        if (!editor) return;
+
+        setLocked(prev => {
+            const newState = !prev;
+            editor.setEditable(!newState);
+            return newState;
+        })
+    }
+
+
     return (
+
         <div className="markdown-editor">
-            <EditorContent editor={editor} />
+
+            <button className="lock-button" onClick={toggleLocked}>
+                {locked ? "🔓 Débloquer" : "🔒 Bloquer l’édition"}
+            </button>
+
+            <div className={locked ? "editor-wrapper locked" : "editor-wrapper"}>
+                <EditorContent editor={editor}/>
+            </div>
 
             {/* Barre de statistiques */}
             <div className="stats-bar">
@@ -80,4 +107,8 @@ export function MarkdownEditor({ content, onChange }: Props) {
             </div>
         </div>
     );
+
+
 }
+
+export default MarkdownEditor

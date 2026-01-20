@@ -5,7 +5,7 @@ import type Note from "../../types/note.ts";
 import {buildFolderTree} from "../utils/buildFolderTree.tsx";
 import {FolderTreeComponent} from "./folderTreeComponent.tsx";
 import {FolderHeader} from "./folderHeader.tsx";
-import {MarkdownEditor} from "./MarkdownEditor.tsx";
+import MarkdownEditor from "./MarkdownEditor.tsx";
 import "./folderList.css";
 
 const folderService = new FakeFolderService();
