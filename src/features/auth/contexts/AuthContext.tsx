@@ -5,19 +5,41 @@ interface AuthContextType {
     user: User | null;
     setUser: (user: User | null) => void;
     logout: () => void;
+    getToken: () => string | null;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+// Charge l'utilisateur depuis localStorage au démarrage
+function loadUserFromStorage(): User | null {
+    const stored = localStorage.getItem('user');
+    return stored ? JSON.parse(stored) : null;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUserState] = useState<User | null>(loadUserFromStorage);
 
+    // Sauvegarde l'utilisateur dans localStorage
+    const setUser = (newUser: User | null) => {
+        if (newUser) {
+            localStorage.setItem('user', JSON.stringify(newUser));
+        } else {
+            localStorage.removeItem('user');
+        }
+        setUserState(newUser);
+    };
 
-    //Fonction à utiliser pour qu'on puisse le déconnecter
-    const logout = () => setUser(null);
+    // Déconnexion
+    const logout = () => {
+        localStorage.removeItem('user');
+        setUserState(null);
+    };
+
+    // Récupère le token JWT
+    const getToken = () => user?.token ?? null;
 
     return (
-        <AuthContext.Provider value={{ user, setUser, logout }}>
+        <AuthContext.Provider value={{ user, setUser, logout, getToken }}>
             {children}
         </AuthContext.Provider>
     );
