@@ -5,33 +5,49 @@ interface InputData {
     noteTitle: string
 }
 
-export function FolderHeader({ onCreateFolder, currentFolderId  }) {
+// Composant pour créer des dossiers et des notes
+export function FolderHeader({ onCreateFolder, onCreateNote, currentFolderId }) {
 
+    // État pour savoir quel input afficher (folder, note, ou aucun)
     const [openInput, setOpenInput] = useState<"folder" | "note" | null>(null);
 
-    //Signaux
+    // Valeurs des inputs
     const [inputData, setInputData] = useState<InputData>({
         folderTitle: '',
         noteTitle: '',
     })
 
-    //fonction qui va appel au service pour créer un folder
+    // Crée un nouveau dossier
     function createFolder() {
+        if (!inputData.folderTitle.trim()) return; // Ne pas créer si vide
         onCreateFolder({
-            id_user: 1, //à remplacer avec le user connecté
-            id_parent_folder: currentFolderId,//à remplacer avec le current folder
+            id_user: 1,
+            id_parent_folder: currentFolderId,
             title: inputData.folderTitle
         });
+        // Reset et ferme l'input
+        setInputData(prev => ({ ...prev, folderTitle: '' }));
+        setOpenInput(null);
     }
 
-
-    //fonction qui va appel au service pour créer une note
+    // Crée une nouvelle note
     function createNote() {
-
+        if (!inputData.noteTitle.trim()) return; // Ne pas créer si vide
+        if (currentFolderId === null) {
+            alert("Sélectionnez d'abord un dossier");
+            return;
+        }
+        onCreateNote({
+            id_user: 1,
+            id_folder: currentFolderId,
+            title: inputData.noteTitle
+        });
+        // Reset et ferme l'input
+        setInputData(prev => ({ ...prev, noteTitle: '' }));
+        setOpenInput(null);
     }
 
-    // Met à jour l'état du input à chaque frappe dans un input
-    //Le champ modifié est identifié grâce à son attribut name
+    // Met à jour l'état à chaque frappe
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target
         setInputData((prev) => ({
@@ -41,7 +57,8 @@ export function FolderHeader({ onCreateFolder, currentFolderId  }) {
     }
 
     return (
-        <>
+        <div className="folder-header">
+            {/* Boutons pour ouvrir les inputs */}
             <button onClick={() => setOpenInput(openInput === "folder" ? null : "folder")}>
                 +📁
             </button>
@@ -50,19 +67,35 @@ export function FolderHeader({ onCreateFolder, currentFolderId  }) {
                 +📄
             </button>
 
+            {/* Input pour créer un dossier */}
             {openInput === "folder" && (
-                <>
-                <input name="folderTitle" type="text" placeholder="Titre du dossier" onChange={handleChange} />
+                <div className="header-input">
+                    <input
+                        name="folderTitle"
+                        type="text"
+                        placeholder="Titre du dossier"
+                        value={inputData.folderTitle}
+                        onChange={handleChange}
+                        onKeyDown={(e) => e.key === "Enter" && createFolder()}
+                    />
                     <button onClick={createFolder}>Ajouter</button>
-                </>
+                </div>
             )}
 
+            {/* Input pour créer une note */}
             {openInput === "note" && (
-                <>
-                <input name="noteTitle" type="text" placeholder="Titre d'une note" onChange={handleChange}  />
+                <div className="header-input">
+                    <input
+                        name="noteTitle"
+                        type="text"
+                        placeholder="Titre de la note"
+                        value={inputData.noteTitle}
+                        onChange={handleChange}
+                        onKeyDown={(e) => e.key === "Enter" && createNote()}
+                    />
                     <button onClick={createNote}>Ajouter</button>
-                </>
+                </div>
             )}
-        </>
+        </div>
     );
 }

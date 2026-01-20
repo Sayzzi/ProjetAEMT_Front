@@ -1,35 +1,47 @@
 import {useState, useEffect} from "react";
 import {FolderTreeComponent} from "./folderTreeComponent.tsx";
+import type Note from "../../types/note.ts";
 import "./folderTreeComponent.css";
 
+// Composant qui affiche un dossier et ses enfants (sous-dossiers + notes)
 export function FolderItem({
-                               node,
-                               onSelectFolder,
-                               currentFolderId,
-                               onDeleteFolder
-                           }) {
+    node,              // Le noeud du dossier à afficher
+    onSelectFolder,    // Callback quand on sélectionne un dossier
+    currentFolderId,   // ID du dossier actuellement sélectionné
+    onDeleteFolder,    // Callback pour supprimer un dossier
+    onSelectNote,      // Callback quand on clique sur une note
+    selectedNoteId     // ID de la note actuellement sélectionnée
+}) {
+    // État pour savoir si le dossier est ouvert (déplié)
     const [open, setOpen] = useState(false);
+
+    // État pour le mode édition du titre
     const [isEditing, setIsEditing] = useState(false);
+
+    // Valeur du champ de renommage
     const [editValue, setEditValue] = useState(node.title);
 
+    // Position du menu contextuel (clic droit)
     const [contextMenu, setContextMenu] = useState(null);
 
+    // Vérifie si ce dossier est sélectionné
     const isSelected = currentFolderId === node.id;
 
+    // Valide le renommage du dossier
     function handleRename() {
         if (editValue.trim() !== "" && editValue !== node.title) {
             node.title = editValue;
-            // TODO : appeler updateFolder(node.id, { title: editValue })
         }
         setIsEditing(false);
     }
 
+    // Annule le renommage et restaure le titre original
     function cancelRename() {
         setEditValue(node.title);
         setIsEditing(false);
     }
 
-    // Fermer le menu si on clique ailleurs
+    // Ferme le menu contextuel quand on clique ailleurs
     useEffect(() => {
         const close = () => setContextMenu(null);
         window.addEventListener("click", close);
@@ -38,6 +50,7 @@ export function FolderItem({
 
     return (
         <li>
+            {/* Mode édition : affiche un input pour renommer */}
             {isEditing ? (
                 <input
                     className="folder-input"
@@ -51,23 +64,27 @@ export function FolderItem({
                     }}
                 />
             ) : (
+                // Mode normal : affiche le dossier cliquable
                 <div
                     className={`folder-item ${isSelected ? "selected" : ""}`}
                     onClick={() => {
+                        // Ouvre/ferme le dossier et le sélectionne
                         setOpen(!open);
                         onSelectFolder(node.id);
                     }}
-                    onDoubleClick={() => setIsEditing(true)}
+                    onDoubleClick={() => setIsEditing(true)} // Double-clic = renommer
                     onContextMenu={(e) => {
+                        // Clic droit = ouvre le menu contextuel
                         e.preventDefault();
                         setContextMenu({ x: e.clientX, y: e.clientY });
                     }}
                 >
+                    {/* Icône différente si ouvert ou fermé */}
                     {open ? "📂" : "📁"} {node.title}
                 </div>
             )}
 
-            {/* MENU CONTEXTUEL */}
+            {/* Menu contextuel (clic droit) */}
             {contextMenu && (
                 <div
                     className="context-menu"
@@ -85,13 +102,36 @@ export function FolderItem({
                 </div>
             )}
 
-            {open && node.children.length > 0 && (
-                <FolderTreeComponent
-                    nodes={node.children}
-                    onSelectFolder={onSelectFolder}
-                    currentFolderId={currentFolderId}
-                    onDeleteFolder={onDeleteFolder}
-                />
+            {/* Contenu du dossier (visible seulement si ouvert) */}
+            {open && (
+                <>
+                    {/* Sous-dossiers (récursif) */}
+                    {node.children.length > 0 && (
+                        <FolderTreeComponent
+                            nodes={node.children}
+                            onSelectFolder={onSelectFolder}
+                            currentFolderId={currentFolderId}
+                            onDeleteFolder={onDeleteFolder}
+                            onSelectNote={onSelectNote}
+                            selectedNoteId={selectedNoteId}
+                        />
+                    )}
+
+                    {/* Notes du dossier */}
+                    {node.notes && node.notes.length > 0 && (
+                        <ul>
+                            {node.notes.map((note: Note) => (
+                                <li
+                                    key={note.id}
+                                    className={`note-item ${selectedNoteId === note.id ? "selected" : ""}`}
+                                    onClick={() => onSelectNote?.(note)} // Sélectionne la note
+                                >
+                                    📄 {note.title}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </>
             )}
         </li>
     );

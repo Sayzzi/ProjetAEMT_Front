@@ -1,5 +1,6 @@
-/* Folder Tree Styles */
+/* Styles pour l'arbre des dossiers et notes */
 
+/* Style de base d'un dossier */
 .folder-item {
   cursor: pointer;
   padding: 4px 8px;
@@ -7,18 +8,22 @@
   transition: background-color 0.2s;
 }
 
+/* Hover sur un dossier */
 .folder-item:hover {
   background-color: #2d2d2d;
 }
 
+/* Dossier sélectionné */
 .folder-item.selected {
   background-color: #3d2a1a;
 }
 
+/* Hover sur dossier sélectionné (garde la même couleur) */
 .folder-item.selected:hover {
   background-color: #3d2a1a;
 }
 
+/* Input pour renommer un dossier */
 .folder-input {
   padding: 4px 8px;
   border-radius: 4px;
@@ -27,6 +32,7 @@
   color: #e8e8e8;
 }
 
+/* Menu contextuel (clic droit) */
 .context-menu {
   position: fixed;
   background: #2d2d2d;
@@ -37,12 +43,37 @@
   z-index: 9999;
 }
 
+/* Item du menu contextuel */
 .context-menu-item {
   cursor: pointer;
   padding: 6px 12px;
   color: #e8e8e8;
 }
 
+/* Hover sur item du menu */
 .context-menu-item:hover {
   background-color: #ff6b1a;
+}
+
+/* Style de base d'une note */
+.note-item {
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+/* Hover sur une note */
+.note-item:hover {
+  background-color: #2d2d2d;
+}
+
+/* Note sélectionnée */
+.note-item.selected {
+  background-color: #3d2a1a;
+}
+
+/* Hover sur note sélectionnée */
+.note-item.selected:hover {
+  background-color: #3d2a1a;
 }
