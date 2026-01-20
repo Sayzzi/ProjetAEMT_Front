@@ -1,0 +1,81 @@
+/* Éditeur Markdown */
+
+.markdown-editor {
+    background: #2d2d2d;
+    border-radius: 8px;
+    min-height: 400px;
+    padding: 16px;
+}
+
+.markdown-editor .tiptap {
+    outline: none;
+    min-height: 350px;
+    line-height: 1.8;
+}
+
+/* Placeholder */
+.markdown-editor .tiptap p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    color: #666;
+    pointer-events: none;
+    float: left;
+    height: 0;
+}
+
+/* Titres */
+.markdown-editor h1 { font-size: 1.8rem; color: #ff6b1a; margin: 16px 0; }
+.markdown-editor h2 { font-size: 1.5rem; color: #ff6b1a; margin: 14px 0; }
+.markdown-editor h3 { font-size: 1.2rem; color: #ff6b1a; margin: 12px 0; }
+
+.markdown-editor p { margin: 8px 0; }
+
+/* Gras et italique */
+.markdown-editor strong { color: #ff8c42; }
+.markdown-editor em { font-style: italic; }
+
+/* Listes */
+.markdown-editor ul,
+.markdown-editor ol {
+    margin-left: 24px;
+    margin-bottom: 8px;
+}
+
+.markdown-editor li { margin: 4px 0; }
+
+/* Code */
+.markdown-editor code {
+    background: #1a1a1a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    color: #ff6b1a;
+}
+
+.markdown-editor pre {
+    background: #1a1a1a;
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 12px 0;
+}
+
+.markdown-editor pre code {
+    padding: 0;
+    background: transparent;
+}
+
+/* Citation */
+.markdown-editor blockquote {
+    border-left: 4px solid #ff6b1a;
+    padding-left: 16px;
+    margin: 12px 0;
+    color: #888;
+}
+
+.markdown-editor s { color: #666; }
+
+.markdown-editor hr {
+    border: none;
+    border-top: 1px solid #444;
+    margin: 16px 0;
+}

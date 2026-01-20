@@ -1,25 +1,37 @@
 import type {Folder} from "../../types/folder.ts";
 import type {FolderNode} from "../../types/folderNode.ts";
+import type Note from "../../types/note.ts";
 
-export function buildFolderTree(folders: Folder[]): FolderNode[] {
+// Transforme une liste plate de dossiers et notes en arbre hiérarchique
+export function buildFolderTree(folders: Folder[], notes: Note[] = []): FolderNode[] {
+    // Map pour accéder rapidement à un dossier par son ID
     const folderMap = new Map<number, FolderNode>();
 
-    //Convertir chaque folder en folderNode car chaque folder peut avoir des sous-folders
+    // Étape 1 : Convertir chaque folder en FolderNode (avec children et notes vides)
     folders.forEach(f => {
         folderMap.set(
             f.id,
-            { ...f, children: [] }
+            { ...f, children: [], notes: [] }
         );
     });
 
-    const roots: FolderNode[] = []; //Création des tableaux pour les dossiers qui n'ont pas de parent(racine)
+    // Étape 2 : Ajouter les notes à leurs dossiers respectifs
+    notes.forEach(note => {
+        const folder = folderMap.get(note.id_folder);
+        if (folder) folder.notes.push(note);
+    });
+
+    // Étape 3 : Construire la hiérarchie parent/enfant
+    const roots: FolderNode[] = []; // Dossiers racines (sans parent)
 
     folderMap.forEach(node => {
-        if (node.id_parent_folder === null) {//On verifie si l'élement n'a pas de parent
+        if (node.id_parent_folder === null) {
+            // Pas de parent = dossier racine
             roots.push(node);
         } else {
-            const parent = folderMap.get(node.id_parent_folder);//on recupère le parent avec map.get grace à id_parent
-            if (parent) parent.children.push(node);//On l'ajoute dans le children du bon parent
+            // A un parent = on l'ajoute comme enfant du parent
+            const parent = folderMap.get(node.id_parent_folder);
+            if (parent) parent.children.push(node);
         }
     });
 

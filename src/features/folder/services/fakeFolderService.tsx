@@ -1,7 +1,14 @@
 import type {Folder} from "../../types/folder.ts";
+import type Note from "../../types/note.ts";
 
 
 export class FakeFolderService {
+    private notes: Note[] = [
+        { id: 1, id_user: 1, id_folder: 1, title: "Ma première note", content: "<h1>Bienvenue</h1><p>Ceci est une note avec du <strong>texte en gras</strong> et en <em>italique</em>.</p><h2>Fonctionnalités</h2><ul><li>Tape <strong>**texte**</strong> pour du gras</li><li>Tape <em>*texte*</em> pour de l'italique</li><li>Tape # au début pour un titre</li></ul>" },
+        { id: 2, id_user: 1, id_folder: 1, title: "Idées projet", content: "<h2>Idées</h2><ul><li>Créer une app de notes</li><li>Ajouter le thème <strong>Halloween</strong></li><li>Intégrer le backend</li></ul>" },
+        { id: 3, id_user: 1, id_folder: 2, title: "Todo list", content: "<h2>À faire</h2><ol><li>Finir le frontend</li><li>Tester l'application</li><li>Déployer</li></ol>" },
+    ];
+
     private folders: Folder[] = [
         {
             id: 1,
@@ -27,6 +34,7 @@ export class FakeFolderService {
     ];
 
     private autoIncrementId = 4;
+    private noteAutoIncrementId = 4;
 
     // Récupère tous les dossiers d’un utilisateur
     getFoldersByUser(id_user: number): Folder[] {
@@ -91,5 +99,39 @@ export class FakeFolderService {
 
         this.folders = newList;
         return deleted;
+    }
+
+    // Récupère les notes d'un dossier
+    getNotesByFolder(id_folder: number): Note[] {
+        return this.notes.filter(n => n.id_folder === id_folder);
+    }
+
+    // Récupère toutes les notes d'un utilisateur
+    getNotesByUser(id_user: number): Note[] {
+        return this.notes.filter(n => n.id_user === id_user);
+    }
+
+    // Crée une nouvelle note
+    createNote(data: { id_user: number, id_folder: number, title: string }): Note {
+        const newNote: Note = {
+            id: this.noteAutoIncrementId++,
+            id_user: data.id_user,
+            id_folder: data.id_folder,
+            title: data.title,
+            content: "",
+            created_at: new Date().toISOString()
+        };
+        this.notes.push(newNote);
+        return newNote;
+    }
+
+    // Met à jour une note
+    updateNote(id: number, updates: Partial<Note>): Note | null {
+        const index = this.notes.findIndex(n => n.id === id);
+        if (index !== -1) {
+            this.notes[index] = { ...this.notes[index], ...updates };
+            return this.notes[index];
+        }
+        return null;
     }
 }

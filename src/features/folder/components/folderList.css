@@ -1,0 +1,109 @@
+/* Layout principal de l'application */
+
+/* Container flex : sidebar à gauche, contenu à droite */
+.app-layout {
+    display: flex;
+    height: calc(100vh - 50px); /* Hauteur totale moins la navbar */
+}
+
+/* Sidebar gauche avec l'arbre des dossiers */
+.sidebar {
+    width: 280px;
+    background: #2d2d2d;
+    border-right: 1px solid #444;
+    padding: 16px;
+    overflow-y: auto; /* Scroll si contenu trop long */
+}
+
+/* Titre de la sidebar */
+.sidebar h2 {
+    padding: 0 0 16px 0;
+    margin: 0;
+    border-bottom: 1px solid #444;
+}
+
+/* Zone de contenu principale (à droite) */
+.content {
+    flex: 1; /* Prend tout l'espace restant */
+    padding: 32px;
+    overflow-y: auto;
+}
+
+/* Titre de la note sélectionnée */
+.content h1 {
+    color: #ff6b1a;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #444;
+}
+
+/* Contenu de la note */
+.note-content {
+    line-height: 1.6;
+    white-space: pre-wrap; /* Préserve les retours à la ligne */
+}
+
+/* Message quand aucune note n'est sélectionnée */
+.no-selection {
+    color: #888;
+    text-align: center;
+    margin-top: 100px;
+}
+
+/* Input pour éditer le titre de la note */
+.title-input {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ff6b1a;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #ff6b1a;
+    width: 100%;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+}
+
+.title-input:focus {
+    outline: none;
+}
+
+/* Textarea pour éditer le contenu */
+.content-textarea {
+    width: 100%;
+    min-height: 300px;
+    background: #2d2d2d;
+    border: 1px solid #444;
+    border-radius: 8px;
+    color: #e8e8e8;
+    padding: 16px;
+    font-size: 1rem;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+.content-textarea:focus {
+    outline: none;
+    border-color: #ff6b1a;
+}
+
+/* Header avec les boutons de création */
+.folder-header {
+    padding: 12px 0;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #444;
+}
+
+.folder-header button {
+    margin-right: 8px;
+}
+
+.header-input {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+}
+
+.header-input input {
+    flex: 1;
+}
+
