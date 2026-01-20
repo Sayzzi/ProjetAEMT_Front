@@ -105,3 +105,207 @@
 .stat-item strong {
     color: #ff6b1a;
 }
+
+
+
+/* Style du lien */
+.markdown-editor a {
+    position: relative;
+}
+
+/* Fantôme n°1 */
+.markdown-editor a::before,
+.markdown-editor a::after {
+    content: "👻";
+    position: absolute;
+    font-size: 14px;
+    opacity: 0;
+    transform: translateY(0) scale(0.6);
+    pointer-events: none; /* ne gêne pas le clic */
+    transition: opacity 0.2s ease-out;
+}
+
+/* Position de base des fantômes */
+.markdown-editor a::before {
+    left: -16px;
+    top: -4px;
+}
+.markdown-editor a::after {
+    right: -16px;
+    top: -4px;
+}
+
+/* Au hover : les fantômes apparaissent et s'envolent */
+.markdown-editor a:hover::before {
+    animation: ghost-fly-1 1.2s ease-out forwards;
+    opacity: 1;
+}
+.markdown-editor a:hover::after {
+    animation: ghost-fly-2 1.4s ease-out forwards;
+    opacity: 1;
+}
+
+/* Animation du fantôme gauche */
+@keyframes ghost-fly-1 {
+    0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0.6);
+    }
+    30% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-20px, -40px) scale(1);
+        opacity: 0;
+    }
+}
+
+/* Animation du fantôme droit */
+@keyframes ghost-fly-2 {
+    0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0.6);
+    }
+    30% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(20px, -50px) scale(1.1) rotate(5deg);
+        opacity: 0;
+    }
+}
+
+/* ========== TABLEAUX ========== */
+
+/* Toolbar des tableaux */
+.table-toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.table-toolbar button {
+    background: #1a1a1a;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.table-toolbar button:hover {
+    background: #ff6b1a;
+    border-color: #ff6b1a;
+}
+
+/* Style du tableau */
+.markdown-editor table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+    background: #1a1a1a;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.markdown-editor th,
+.markdown-editor td {
+    border: 1px solid #444;
+    padding: 10px 14px;
+    text-align: left;
+    min-width: 80px;
+}
+
+/* En-tête du tableau */
+.markdown-editor th {
+    background: #ff6b1a;
+    color: #000;
+    font-weight: bold;
+}
+
+/* Lignes alternées */
+.markdown-editor tr:nth-child(even) td {
+    background: #2a2a2a;
+}
+
+/* Survol des cellules */
+.markdown-editor td:hover {
+    background: #3a3a3a;
+}
+
+/* Cellule sélectionnée (TipTap) */
+.markdown-editor .selectedCell {
+    background: rgba(255, 107, 26, 0.3) !important;
+}
+
+/* Poignée de redimensionnement */
+.markdown-editor .column-resize-handle {
+    background-color: #ff6b1a;
+    width: 3px;
+    position: absolute;
+    right: -1px;
+    top: 0;
+    bottom: 0;
+    cursor: col-resize;
+}
+
+/* Tableau sélectionné */
+.markdown-editor .tableWrapper {
+    overflow-x: auto;
+    margin: 16px 0;
+}
+
+/* ========== MENU CONTEXTUEL ========== */
+
+.context-menu {
+    position: fixed;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 4px 0;
+    min-width: 160px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+}
+
+.context-menu-title {
+    padding: 6px 12px;
+    font-size: 12px;
+    color: #ff6b1a;
+    border-bottom: 1px solid #333;
+}
+
+.context-menu button {
+    display: block;
+    width: 100%;
+    padding: 6px 12px;
+    background: transparent;
+    border: none;
+    color: #ccc;
+    text-align: left;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.context-menu button:hover {
+    background: #333;
+    color: #fff;
+}
+
+.context-menu button.danger {
+    color: #ff6b6b;
+}
+
+.context-menu button.danger:hover {
+    background: #4a1a1a;
+}
+
+.context-menu hr {
+    border: none;
+    border-top: 1px solid #333;
+    margin: 4px 0;
+}
+
