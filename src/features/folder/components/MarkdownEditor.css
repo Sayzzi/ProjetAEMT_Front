@@ -38,8 +38,12 @@
 .markdown-editor ol {
     margin-left: 24px;
     margin-bottom: 8px;
+    list-style: "🎃 ";
 }
 
+.markdown-editor ul ul{
+    list-style: "👻 ";
+}
 .markdown-editor li { margin: 4px 0; }
 
 /* Code */
