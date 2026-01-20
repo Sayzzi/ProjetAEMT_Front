@@ -1,5 +1,6 @@
 import {useState, useEffect} from "react";
 import {FolderTreeComponent} from "./folderTreeComponent.tsx";
+import "./folderTreeComponent.css";
 
 export function FolderItem({
                                node,
@@ -39,6 +40,7 @@ export function FolderItem({
         <li>
             {isEditing ? (
                 <input
+                    className="folder-input"
                     autoFocus
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
@@ -47,14 +49,10 @@ export function FolderItem({
                         if (e.key === "Enter") handleRename();
                         if (e.key === "Escape") cancelRename();
                     }}
-                    style={{
-                        padding: "4px 8px",
-                        borderRadius: "4px",
-                        border: "1px solid #ccc"
-                    }}
                 />
             ) : (
                 <div
+                    className={`folder-item ${isSelected ? "selected" : ""}`}
                     onClick={() => {
                         setOpen(!open);
                         onSelectFolder(node.id);
@@ -64,12 +62,6 @@ export function FolderItem({
                         e.preventDefault();
                         setContextMenu({ x: e.clientX, y: e.clientY });
                     }}
-                    style={{
-                        cursor: "pointer",
-                        backgroundColor: isSelected ? "#d0e7ff" : "transparent",
-                        padding: "4px 8px",
-                        borderRadius: "4px"
-                    }}
                 >
                     {open ? "📂" : "📁"} {node.title}
                 </div>
@@ -78,26 +70,17 @@ export function FolderItem({
             {/* MENU CONTEXTUEL */}
             {contextMenu && (
                 <div
-                    style={{
-                        position: "fixed",
-                        top: contextMenu.y,
-                        left: contextMenu.x,
-                        background: "white",
-                        border: "1px solid #ccc",
-                        borderRadius: "4px",
-                        padding: "4px 8px",
-                        boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                        zIndex: 9999
-                    }}
+                    className="context-menu"
+                    style={{ top: contextMenu.y, left: contextMenu.x }}
                 >
                     <div
-                        style={{ cursor: "pointer", padding: "4px 8px" }}
+                        className="context-menu-item"
                         onClick={() => {
                             onDeleteFolder(node.id);
                             setContextMenu(null);
                         }}
                     >
-                        🗑️ Supprimer
+                        Supprimer
                     </div>
                 </div>
             )}

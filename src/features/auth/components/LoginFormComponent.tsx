@@ -1,5 +1,4 @@
 
-
 // useState: hook React pour créer des variables d'état
 // Quand l'état change, le composant se re-render (se réaffiche)
 import { useState } from 'react';

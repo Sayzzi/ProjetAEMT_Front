@@ -1,0 +1,48 @@
+/* Folder Tree Styles */
+
+.folder-item {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.folder-item:hover {
+  background-color: #2d2d2d;
+}
+
+.folder-item.selected {
+  background-color: #3d2a1a;
+}
+
+.folder-item.selected:hover {
+  background-color: #3d2a1a;
+}
+
+.folder-input {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background: #1a1a1a;
+  color: #e8e8e8;
+}
+
+.context-menu {
+  position: fixed;
+  background: #2d2d2d;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 4px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  z-index: 9999;
+}
+
+.context-menu-item {
+  cursor: pointer;
+  padding: 6px 12px;
+  color: #e8e8e8;
+}
+
+.context-menu-item:hover {
+  background-color: #ff6b1a;
+}
