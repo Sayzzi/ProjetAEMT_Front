@@ -1,7 +1,3 @@
-// ============================================
-// IMPORTS
-// ============================================
-
 // useState: hook React pour créer des variables d'état
 // Quand l'état change, le composant se re-render (se réaffiche)
 import { useState } from 'react';
@@ -35,8 +31,6 @@ export function LoginFormComponent() {
 
     // password: contient ce que l'utilisateur tape dans le champ "mot de passe"
     const [password, setPassword] = useState('');
-
-    // error: contient le message d'erreur à afficher (si connexion échoue)
     const [error, setError] = useState('');
 
     // ============================================
@@ -66,9 +60,6 @@ export function LoginFormComponent() {
 
         // Efface l'erreur précédente avant de réessayer
         setError('');
-
-        // try/catch: permet de gérer les erreurs
-        // Si le code dans try échoue, on va dans catch
         try {
             // ============================================
             // 1. APPEL API - Connexion
@@ -102,9 +93,6 @@ export function LoginFormComponent() {
             navigate('/');
 
         } catch (err) {
-            // ============================================
-            // GESTION D'ERREUR
-            // ============================================
 
             // Si login() échoue (mauvais mot de passe, utilisateur inexistant)
             // On affiche un message d'erreur à l'utilisateur
@@ -113,7 +101,7 @@ export function LoginFormComponent() {
     };
 
     // ============================================
-    // RENDU JSX - Ce qui s'affiche à l'écran
+    // Ce qui s'affiche à l'écran
     // ============================================
 
     return (
@@ -122,10 +110,6 @@ export function LoginFormComponent() {
         <form onSubmit={handleSubmit}>
 
             <h2>Connexion</h2>
-
-            {/* ============================================ */}
-            {/* AFFICHAGE CONDITIONNEL DE L'ERREUR */}
-            {/* ============================================ */}
 
             {/*
                 {error && <p>...</p>} signifie:
@@ -139,9 +123,6 @@ export function LoginFormComponent() {
             */}
             {error && <p style={{ color: 'red' }}>{error}</p>}
 
-            {/* ============================================ */}
-            {/* CHAMP NOM D'UTILISATEUR */}
-            {/* ============================================ */}
             <div>
                 <label>Nom d'utilisateur</label>
                 <input
@@ -154,8 +135,6 @@ export function LoginFormComponent() {
                     // e.target.value = le nouveau contenu de l'input
                     // setUserName() met à jour l'état, ce qui re-render le composant
                     onChange={(e) => setUserName(e.target.value)}
-
-                    // required: le navigateur empêche la soumission si le champ est vide
                     required
                 />
             </div>
@@ -166,23 +145,12 @@ export function LoginFormComponent() {
             <div>
                 <label>Mot de passe</label>
                 <input
-                    // type="password" masque les caractères (●●●●●)
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
             </div>
-
-            {/* ============================================ */}
-            {/* BOUTON SOUMETTRE */}
-            {/* ============================================ */}
-
-            {/*
-                type="submit" est important!
-                - Déclenche l'événement onSubmit du formulaire
-                - Permet aussi de soumettre avec la touche Entrée
-            */}
             <button type="submit">Se connecter</button>
         </form>
     );
