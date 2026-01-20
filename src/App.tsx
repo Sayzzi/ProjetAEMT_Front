@@ -1,14 +1,12 @@
 import './App.css'
-import AddNote from "./features/note/components/addNote.tsx";
-
+import NoteManagerComponent from "./features/note/components/NoteManagerComponent.tsx";
 
 function App() {
 
     //test
     return (
         <>
-
-            <AddNote/>
+            <NoteManagerComponent/>
         </>
     )
 }

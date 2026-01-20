@@ -90,7 +90,6 @@ export default function AddNote() {
             currentNode = sel.anchorNode;
         }
 
-        const text = currentNode?.textContent || '';
 
         const blockPatterns = [
             { regex: /^######\s(.*)$/, tag: 'h6' },
