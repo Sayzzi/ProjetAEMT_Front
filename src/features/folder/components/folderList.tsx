@@ -6,6 +6,7 @@ import {buildFolderTree} from "../utils/buildFolderTree.tsx";
 import {FolderTreeComponent} from "./folderTreeComponent.tsx";
 import {FolderHeader} from "./folderHeader.tsx";
 import MarkdownEditor from "./MarkdownEditor.tsx";
+import ExportPdfButton from "./exportPdfButton.tsx";
 import "./folderList.css";
 import {FolderService} from "../services/folderService.tsx";
 import {useAuth} from "../../auth/contexts/AuthContext.tsx";
@@ -25,6 +26,7 @@ export function FolderList() {
     const [editingTitle, setEditingTitle] = useState(false);         // Mode édition titre
     const [noteTitleValue, setNoteTitleValue] = useState("");        // Valeur du titre
     const [contentValue, setContentValue] = useState("");            // Contenu de la note
+    const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");  // Statut sauvegarde
     const {user} = useAuth();  // User connecté (JWT)
 
     // useRef pour le debounce : garde la valeur entre les renders
@@ -99,6 +101,7 @@ export function FolderList() {
         setNoteTitleValue(note.title || "");
         setContentValue(note.content || "");
         setEditingTitle(false);
+        setSaveStatus("idle");
     }
 
     // Sauvegarde le titre (Enter ou perte de focus)
@@ -125,18 +128,24 @@ export function FolderList() {
             content: content
         };
         try {
+            setSaveStatus("saving");  // "En cours de sauvegarde..."
             await noteService.updateNote(command);
             // Met à jour la date de modif dans l'UI sans recharger
             setSelectedNote({ ...selectedNote, updatedAt: new Date().toISOString() });
+            setSaveStatus("saved");  // "Note sauvegardée !"
             console.log("Note sauvegardée");
+            // Remet à idle après 2s
+            setTimeout(() => setSaveStatus("idle"), 2000);
         } catch (error) {
             console.error("Erreur sauvegarde:", error);
+            setSaveStatus("idle");
         }
     }
 
     // Appelé à chaque frappe : attend 1s avant de sauvegarder (debounce)
     function handleContentChange(newContent: string) {
         setContentValue(newContent);
+        setSaveStatus("idle");  // Reset pendant la frappe
 
         // Annule le timer précédent si on tape encore
         if (saveTimeoutRef.current) {
@@ -194,6 +203,18 @@ export function FolderList() {
             <main className="content">
                 {selectedNote ? (
                     <>
+                        {/* Barre d'outils : export PDF + statut sauvegarde */}
+                        <div className="note-toolbar">
+                            <ExportPdfButton
+                                noteId={selectedNote.id!}
+                                disabled={saveStatus === "saving"}
+                            />
+                            {/* Message de statut */}
+                            {saveStatus === "saved" && (
+                                <span className="save-status saved">✅ Note sauvegardée !</span>
+                            )}
+                        </div>
+
                         {/* Titre : double-clic pour éditer */}
                         {editingTitle ? (
                             <input

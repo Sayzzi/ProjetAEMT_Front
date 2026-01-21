@@ -161,6 +161,31 @@
   font-size: 0.9rem;
 }
 
+/* Barre d'outils (export PDF + statut) */
+.note-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--fog);
+}
+
+/* Message de sauvegarde */
+.save-status {
+  font-size: 0.85rem;
+  color: #666;
+  transition: opacity 0.3s;
+}
+
+.save-status.saving {
+  color: var(--pumpkin);
+}
+
+.save-status.saved {
+  color: var(--zombie);
+}
+
 /* Dates de la note */
 .note-dates {
   display: flex;

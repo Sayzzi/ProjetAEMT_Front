@@ -2,6 +2,7 @@ import {type ChangeEvent, useState} from "react";
 import {useAuth} from "../../auth/contexts/AuthContext.tsx";
 import type {CreateFolderCommand} from "../services/commands/createFolderCommand.ts";
 import type {NoteCreateCommand} from "../../types/commands/note-create-command.ts";
+import ExportZipButton from "./exportZipButton.tsx";
 
 interface InputData {
     folderTitle: string
@@ -91,6 +92,12 @@ export function FolderHeader({ onCreateFolder, onCreateNote, currentFolderId }) 
             <button onClick={() => setOpenInput(openInput === "note" ? null : "note")}>
                 +📄
             </button>
+
+            {/* Export ZIP du dossier sélectionné */}
+            <ExportZipButton
+                folderId={currentFolderId}
+                disabled={!currentFolderId}
+            />
 
             {/* Input pour créer un dossier */}
             {openInput === "folder" && (

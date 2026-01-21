@@ -12,7 +12,8 @@ export function FolderItem({
     onSelectNote,      // Callback : sélectionne une note
     selectedNoteId,    // ID de la note sélectionnée
     onUpdateFolder,    // Callback : renomme ce dossier
-    onDeleteNote       // Callback : supprime une note
+    onDeleteNote,      // Callback : supprime une note
+    depth = 0          // Niveau de profondeur (pour l'indentation)
 }) {
     // true = dossier ouvert (on voit le contenu)
     const [open, setOpen] = useState(false);
@@ -63,6 +64,7 @@ export function FolderItem({
             {isEditing ? (
                 <input
                     className="folder-input"
+                    style={{ marginLeft: `${depth * 16}px` }}
                     autoFocus
                     value={folderTitleValue}
                     onChange={(e) => setFolderTitleValue(e.target.value)}
@@ -76,6 +78,7 @@ export function FolderItem({
                 // Mode normal : affiche le dossier
                 <div
                     className={`folder-item ${isSelected ? "selected" : ""}`}
+                    style={{ paddingLeft: `${10 + depth * 16}px` }}
                     onClick={() => {
                         setOpen(!open);  // Toggle ouvert/fermé
                         onSelectFolder(node.id);
@@ -129,7 +132,7 @@ export function FolderItem({
             {/* Contenu du dossier (si ouvert) */}
             {open && (
                 <>
-                    {/* Sous-dossiers (appel récursif) */}
+                    {/* Sous-dossiers (appel récursif avec depth + 1) */}
                     {node.children.length > 0 && (
                         <FolderTreeComponent
                             nodes={node.children}
@@ -140,6 +143,7 @@ export function FolderItem({
                             selectedNoteId={selectedNoteId}
                             onUpdateFolder={onUpdateFolder}
                             onDeleteNote={onDeleteNote}
+                            depth={depth + 1}
                         />
                     )}
 
@@ -150,6 +154,7 @@ export function FolderItem({
                                 <li
                                     key={note.id}
                                     className={`note-item ${selectedNoteId === note.id ? "selected" : ""}`}
+                                    style={{ paddingLeft: `${10 + (depth + 1) * 16}px` }}
                                     onClick={() => onSelectNote?.(note)}
                                     onContextMenu={(e) => {
                                         e.preventDefault();

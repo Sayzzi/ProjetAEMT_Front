@@ -6,8 +6,9 @@ import { LoginFormComponent } from "./features/auth/components/LoginFormComponen
 import { RegisterFormComponent } from "./features/auth/components/RegisterFormComponent.tsx";
 import { FolderList } from "./features/folder/components/folderList.tsx";
 
-// Contexte d'authentification
+// Contexte d'authentification + protection des routes
 import { AuthProvider, useAuth } from "./features/auth/contexts/AuthContext.tsx";
+import { ProtectedRoute } from "./features/auth/components/ProtectedRoute.tsx";
 
 // ============================================
 // BARRE DE STATUT (connecté ou pas)
@@ -25,16 +26,24 @@ function StatusBar() {
             alignItems: 'center'
         }}>
             <div>
-                <Link to="/" style={{ color: 'white', marginRight: '15px' }}>Accueil</Link>
-                <Link to="/login" style={{ color: 'white', marginRight: '15px' }}>Connexion</Link>
-                <Link to="/register" style={{ color: 'white' }}>Inscription</Link>
+                {/* Affiche Accueil seulement si connecté */}
+                {user && (
+                    <Link to="/" style={{ color: 'white', marginRight: '15px' }}>Accueil</Link>
+                )}
+                {/* Affiche Connexion/Inscription seulement si pas connecté */}
+                {!user && (
+                    <>
+                        <Link to="/login" style={{ color: 'white', marginRight: '15px' }}>Connexion</Link>
+                        <Link to="/register" style={{ color: 'white' }}>Inscription</Link>
+                    </>
+                )}
             </div>
 
             <div>
                 {user ? (
                     <>
                         <span style={{ marginRight: '15px' }}>
-                            Connecté: {user.userName} (id: {user.id})
+                            Connecté: {user.userName}
                         </span>
                         <button onClick={logout}>Déconnexion</button>
                     </>
@@ -55,7 +64,12 @@ function App() {
             <AuthProvider>
                 <StatusBar />
                 <Routes>
-                    <Route path="/" element={<FolderList />} />
+                    {/* Route protégée : redirige vers /login si pas connecté */}
+                    <Route path="/" element={
+                        <ProtectedRoute>
+                            <FolderList />
+                        </ProtectedRoute>
+                    } />
                     <Route path="/login" element={<LoginFormComponent />} />
                     <Route path="/register" element={<RegisterFormComponent />} />
                 </Routes>

@@ -11,7 +11,8 @@ export function FolderTreeComponent({
     onSelectNote,      // Callback : sélectionne une note
     selectedNoteId,    // ID de la note sélectionnée
     onUpdateFolder,    // Callback : renomme un dossier
-    onDeleteNote       // Callback : supprime une note
+    onDeleteNote,      // Callback : supprime une note
+    depth = 0          // Niveau de profondeur (pour l'indentation)
 }: {
     nodes: FolderNode[],
     currentFolderId: number | null,
@@ -20,7 +21,8 @@ export function FolderTreeComponent({
     onSelectNote?: (note: Note) => void,
     selectedNoteId?: number | null,
     onUpdateFolder?: (newTitle: string) => void,
-    onDeleteNote?: (id: number) => void
+    onDeleteNote?: (id: number) => void,
+    depth?: number
 }) {
     return (
         <ul>
@@ -36,6 +38,7 @@ export function FolderTreeComponent({
                     selectedNoteId={selectedNoteId}
                     onUpdateFolder={onUpdateFolder}
                     onDeleteNote={onDeleteNote}
+                    depth={depth}
                 />
             ))}
         </ul>
