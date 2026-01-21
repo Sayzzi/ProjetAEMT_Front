@@ -1,7 +1,8 @@
 // Composant principal : affiche la sidebar + l'éditeur de notes
-import {useEffect, useState, useRef} from "react";
+import {useEffect, useState, useRef, useMemo} from "react";
 import type {FolderNode} from "../../types/folderNode.ts";
 import type Note from "../../types/note.ts";
+import type {MentionItem} from "./MentionList.tsx";
 import {buildFolderTree} from "../utils/buildFolderTree.tsx";
 import {FolderTreeComponent} from "./folderTreeComponent.tsx";
 import {FolderHeader} from "./folderHeader.tsx";
@@ -226,6 +227,35 @@ export function FolderList() {
         setSidebarOpen(true);
     }
 
+    // Collecte toutes les notes pour les @mentions (excluant la note courante)
+    const allNotes = useMemo((): MentionItem[] => {
+        const collectNotes = (nodes: FolderNode[]): MentionItem[] => {
+            let result: MentionItem[] = [];
+            for (const folder of nodes) {
+                if (folder.notes) {
+                    result = result.concat(
+                        folder.notes
+                            .filter(n => n.id !== selectedNote?.id) // Exclut la note courante
+                            .map(n => ({ id: n.id!, title: n.title || 'Sans titre' }))
+                    );
+                }
+                if (folder.children) {
+                    result = result.concat(collectNotes(folder.children));
+                }
+            }
+            return result;
+        };
+        return collectNotes(tree);
+    }, [tree, selectedNote?.id]);
+
+    // Callback @mention : ouvre la note liée
+    function handleMentionClick(noteId: number) {
+        const note = findNoteInTree(tree, noteId);
+        if (note) {
+            handleSelectNote(note);
+        }
+    }
+
     return (
         // Layout principal : sidebar + zone de contenu
         <div className={`app-layout ${sidebarOpen ? '' : 'sidebar-collapsed'}`}>
@@ -379,10 +409,12 @@ export function FolderList() {
                             </span>
                         </div>
 
-                        {/* Éditeur TipTap */}
+                        {/* Éditeur TipTap - tape @ pour lier une note */}
                         <MarkdownEditor
                             content={contentValue}
                             onChange={handleContentChange}
+                            notes={allNotes}
+                            onMentionClick={handleMentionClick}
                         />
                     </>
                 ) : (
