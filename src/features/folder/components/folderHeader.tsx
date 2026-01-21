@@ -26,7 +26,7 @@ export function FolderHeader({ onCreateFolder, onCreateNote, currentFolderId }) 
         if (!inputData.folderTitle.trim()) return; // Ne pas créer si vide
 
         if (user == null){//Ne pas creer si user n'est pas connecté
-            alert("le user n'est pas conncesté");
+            alert("Utilisateur non connecté");
             return
         }
         const command : CreateFolderCommand = {
@@ -53,7 +53,7 @@ export function FolderHeader({ onCreateFolder, onCreateNote, currentFolderId }) 
         }
 
         if (user == null){//Ne pas creer si user n'est pas connecté
-            alert("le user n'est pas conncesté");
+            alert("Utilisateur non connecté");
             return
         }
 
