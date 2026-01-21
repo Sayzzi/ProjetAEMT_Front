@@ -9,14 +9,16 @@ export function FolderTreeComponent({
     currentFolderId,   // ID du dossier actuellement sélectionné
     onDeleteFolder,    // Callback pour supprimer un dossier
     onSelectNote,      // Callback quand on clique sur une note
-    selectedNoteId     // ID de la note actuellement sélectionnée
+    selectedNoteId,     // ID de la note actuellement sélectionnée
+    onUpdateFolder
 }: {
     nodes: FolderNode[],
     currentFolderId: number | null,
     onSelectFolder: (id: number) => void,
     onDeleteFolder: (id: number) => void,
     onSelectNote?: (note: Note) => void,
-    selectedNoteId?: number | null
+    selectedNoteId?: number | null,
+    onUpdateFolder? : (newTitle : string) => void
 }) {
     return (
         // Liste des dossiers
@@ -31,6 +33,7 @@ export function FolderTreeComponent({
                     onDeleteFolder={onDeleteFolder}
                     onSelectNote={onSelectNote}
                     selectedNoteId={selectedNoteId}
+                    onUpdateFolder={onUpdateFolder}
                 />
             ))}
         </ul>

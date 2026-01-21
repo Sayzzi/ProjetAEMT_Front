@@ -9,8 +9,9 @@ export function FolderItem({
     onSelectFolder,    // Callback quand on sélectionne un dossier
     currentFolderId,   // ID du dossier actuellement sélectionné
     onDeleteFolder,    // Callback pour supprimer un dossier
-    onSelectNote,      // Callback quand on clique sur une note
-    selectedNoteId     // ID de la note actuellement sélectionnée
+    onSelectNote,     // Callback quand on clique sur une note
+    selectedNoteId,     // ID de la note actuellement sélectionné
+    onUpdateFolder
 }) {
     // État pour savoir si le dossier est ouvert (déplié)
     const [open, setOpen] = useState(false);
@@ -19,7 +20,7 @@ export function FolderItem({
     const [isEditing, setIsEditing] = useState(false);
 
     // Valeur du champ de renommage
-    const [editValue, setEditValue] = useState(node.title);
+    const [folderTitleValue, setFolderTitleValue] = useState(node.title);
 
     // Position du menu contextuel (clic droit)
     const [contextMenu, setContextMenu] = useState(null);
@@ -27,17 +28,19 @@ export function FolderItem({
     // Vérifie si ce dossier est sélectionné
     const isSelected = currentFolderId === node.id;
 
+
     // Valide le renommage du dossier
     function handleRename() {
-        if (editValue.trim() !== "" && editValue !== node.title) {
-            node.title = editValue;
+        if (folderTitleValue.trim() !== "" && folderTitleValue !== node.title) {
+            setFolderTitleValue(folderTitleValue);
+            onUpdateFolder(folderTitleValue);
         }
         setIsEditing(false);
     }
 
     // Annule le renommage et restaure le titre original
     function cancelRename() {
-        setEditValue(node.title);
+        setFolderTitleValue(node.title);
         setIsEditing(false);
     }
 
@@ -55,8 +58,8 @@ export function FolderItem({
                 <input
                     className="folder-input"
                     autoFocus
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
+                    value={folderTitleValue}
+                    onChange={(e) => setFolderTitleValue(e.target.value)}
                     onBlur={handleRename}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") handleRename();
@@ -114,6 +117,7 @@ export function FolderItem({
                             onDeleteFolder={onDeleteFolder}
                             onSelectNote={onSelectNote}
                             selectedNoteId={selectedNoteId}
+                            onUpdateFolder={onUpdateFolder}
                         />
                     )}
 
