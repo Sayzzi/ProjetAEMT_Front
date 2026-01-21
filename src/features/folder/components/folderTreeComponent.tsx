@@ -1,16 +1,17 @@
+// Composant qui affiche une liste de dossiers (récursif)
 import type {FolderNode} from "../../types/folderNode.ts";
 import type Note from "../../types/note.ts";
 import {FolderItem} from "./folderItem.tsx";
 
-// Composant qui affiche une liste de dossiers (utilisé récursivement)
 export function FolderTreeComponent({
-    nodes,             // Liste des noeuds (dossiers) à afficher
-    onSelectFolder,    // Callback quand on sélectionne un dossier
-    currentFolderId,   // ID du dossier actuellement sélectionné
-    onDeleteFolder,    // Callback pour supprimer un dossier
-    onSelectNote,      // Callback quand on clique sur une note
-    selectedNoteId,     // ID de la note actuellement sélectionnée
-    onUpdateFolder
+    nodes,             // Liste des dossiers à afficher
+    onSelectFolder,    // Callback : sélectionne un dossier
+    currentFolderId,   // ID du dossier sélectionné
+    onDeleteFolder,    // Callback : supprime un dossier
+    onSelectNote,      // Callback : sélectionne une note
+    selectedNoteId,    // ID de la note sélectionnée
+    onUpdateFolder,    // Callback : renomme un dossier
+    onDeleteNote       // Callback : supprime une note
 }: {
     nodes: FolderNode[],
     currentFolderId: number | null,
@@ -18,12 +19,12 @@ export function FolderTreeComponent({
     onDeleteFolder: (id: number) => void,
     onSelectNote?: (note: Note) => void,
     selectedNoteId?: number | null,
-    onUpdateFolder? : (newTitle : string) => void
+    onUpdateFolder?: (newTitle: string) => void,
+    onDeleteNote?: (id: number) => void
 }) {
     return (
-        // Liste des dossiers
         <ul>
-            {/* Boucle sur chaque dossier et crée un FolderItem */}
+            {/* Boucle sur chaque dossier */}
             {nodes.map(node => (
                 <FolderItem
                     key={node.id}
@@ -34,6 +35,7 @@ export function FolderTreeComponent({
                     onSelectNote={onSelectNote}
                     selectedNoteId={selectedNoteId}
                     onUpdateFolder={onUpdateFolder}
+                    onDeleteNote={onDeleteNote}
                 />
             ))}
         </ul>
