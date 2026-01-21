@@ -1,23 +1,39 @@
-import type Note from "../../types/note.ts";
-import type {NoteCreateCommand} from "../../types/commands/note-create-command.ts";
+import type Note from "../../types/note";
+import type { NoteCreateCommand } from "../../types/commands/note-create-command";
+import type {NoteUpdateCommand} from "../../types/commands/noteUpdateCommand.ts";
 
-const API_URL = import.meta.env.VITE_API_URL + "/notes";
+export class NoteService {
 
-export const postNote: (note: NoteCreateCommand) => Promise<Note> = async (note: NoteCreateCommand) => {
+    private readonly NOTE_API_URL = import.meta.env.VITE_API_URL + "/notes";
 
-    //Créer une note !
-    const response = await fetch(API_URL, {
+    // POST /notes - Création d'une note
+    async createNote(command: NoteCreateCommand): Promise<Note> {
+        const response = await fetch(this.NOTE_API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(command),
+        });
 
-        method: 'POST',
-        headers: {
+        if (!response.ok) {
+            throw new Error("Erreur lors de la création de la note");
+        }
 
-            'Content-Type': 'application/json',
+        return response.json();
+    }
 
-        },
-        body: JSON.stringify(note)
-    });
-
-    return response.json();
-
-
+    //PUT /notes - Modification d'une note
+    async updateNote(command : NoteUpdateCommand) : Promise<void> {
+        const response = await fetch(this.NOTE_API_URL, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(command),
+        })
+        if (!response.ok) {
+            throw new Error("Erreur lors de la modification de la note");
+        }
+    }
 }

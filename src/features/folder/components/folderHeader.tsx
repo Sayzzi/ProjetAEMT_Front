@@ -1,4 +1,7 @@
 import {type ChangeEvent, useState} from "react";
+import {useAuth} from "../../auth/contexts/AuthContext.tsx";
+import type {CreateFolderCommand} from "../services/commands/createFolderCommand.ts";
+import type {NoteCreateCommand} from "../../types/commands/note-create-command.ts";
 
 interface InputData {
     folderTitle: string
@@ -10,6 +13,7 @@ export function FolderHeader({ onCreateFolder, onCreateNote, currentFolderId }) 
 
     // État pour savoir quel input afficher (folder, note, ou aucun)
     const [openInput, setOpenInput] = useState<"folder" | "note" | null>(null);
+    const {user} = useAuth();
 
     // Valeurs des inputs
     const [inputData, setInputData] = useState<InputData>({
@@ -20,11 +24,20 @@ export function FolderHeader({ onCreateFolder, onCreateNote, currentFolderId }) 
     // Crée un nouveau dossier
     function createFolder() {
         if (!inputData.folderTitle.trim()) return; // Ne pas créer si vide
-        onCreateFolder({
-            id_user: 1,
-            id_parent_folder: currentFolderId,
-            title: inputData.folderTitle
-        });
+
+        if (user == null){//Ne pas creer si user n'est pas connecté
+            alert("le user n'est pas conncesté");
+            return
+        }
+        const command : CreateFolderCommand = {
+            userId : user.id,
+            parentFolderId : currentFolderId,
+            title: inputData.folderTitle,
+        }
+
+        //Envoi du command au parent
+        onCreateFolder(command);
+
         // Reset et ferme l'input
         setInputData(prev => ({ ...prev, folderTitle: '' }));
         setOpenInput(null);
@@ -33,15 +46,27 @@ export function FolderHeader({ onCreateFolder, onCreateNote, currentFolderId }) 
     // Crée une nouvelle note
     function createNote() {
         if (!inputData.noteTitle.trim()) return; // Ne pas créer si vide
+
         if (currentFolderId === null) {
             alert("Sélectionnez d'abord un dossier");
             return;
         }
-        onCreateNote({
-            id_user: 1,
-            id_folder: currentFolderId,
-            title: inputData.noteTitle
-        });
+
+        if (user == null){//Ne pas creer si user n'est pas connecté
+            alert("le user n'est pas conncesté");
+            return
+        }
+
+        const command : NoteCreateCommand  = {
+            idUser : user.id,
+            idFolder : currentFolderId,
+            title : inputData.noteTitle,
+            content : " "
+        };
+
+        //Envoi du command au parent
+        onCreateNote(command);
+
         // Reset et ferme l'input
         setInputData(prev => ({ ...prev, noteTitle: '' }));
         setOpenInput(null);
