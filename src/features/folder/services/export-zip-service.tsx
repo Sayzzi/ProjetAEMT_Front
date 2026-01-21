@@ -1,23 +1,23 @@
-// Service pour exporter une note en PDF
+// Service pour exporter un dossier en ZIP
 import {fetchWithAuth} from "../../auth/services/api.ts";
 
-export default function ExportNoteService() {
+export default function ExportZipService() {
 
-    // GET /notes/:id/export-pdf - Télécharge le PDF
-    const exportNoteToPdf = async (noteId: number): Promise<void> => {
+    // GET /folders/:id/export-zip - Télécharge le ZIP du dossier
+    const exportFolderToZip = async (folderId: number): Promise<void> => {
 
         const response = await fetchWithAuth(
-            `/notes/${noteId}/export-pdf`,
+            `/folders/${folderId}/export-zip`,
             {
                 method: "GET",
                 headers: {
-                    Accept: "application/pdf",
+                    Accept: "application/octet-stream",
                 },
             }
         );
 
         if (!response.ok) {
-            throw new Error("Erreur lors de l'export PDF");
+            throw new Error("Erreur lors de l'export ZIP");
         }
 
         // Récupère le blob (fichier binaire)
@@ -25,7 +25,7 @@ export default function ExportNoteService() {
 
         // Nom du fichier depuis le header si possible
         const contentDisposition = response.headers.get("content-disposition");
-        let filename = `note_${noteId}.pdf`;
+        let filename = `folder_${folderId}.zip`;
 
         if (contentDisposition) {
             const match = contentDisposition.match(/filename=([^;]+)/);
@@ -48,6 +48,6 @@ export default function ExportNoteService() {
     };
 
     return {
-        exportNoteToPdf,
+        exportFolderToZip,
     };
 }
