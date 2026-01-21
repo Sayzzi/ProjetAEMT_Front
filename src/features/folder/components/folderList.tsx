@@ -8,6 +8,7 @@ import {FolderHeader} from "./folderHeader.tsx";
 import MarkdownEditor from "./MarkdownEditor.tsx";
 import ExportPdfButton from "./exportPdfButton.tsx";
 import ExportZipButton from "./exportZipButton.tsx";
+import {QuickSearch} from "../../search/components/QuickSearch.tsx";
 import "./folderList.css";
 import {FolderService} from "../services/folderService.tsx";
 import {useAuth} from "../../auth/contexts/AuthContext.tsx";
@@ -182,6 +183,39 @@ export function FolderList() {
         setSidebarOpen(!sidebarOpen);
     }
 
+    // Cherche une note par ID dans l'arbre (récursif)
+    function findNoteInTree(nodes: FolderNode[], noteId: number): Note | null {
+        for (const folder of nodes) {
+            // Cherche dans les notes du dossier
+            const note = folder.notes?.find(n => n.id === noteId);
+            if (note) return note;
+            // Cherche dans les sous-dossiers
+            if (folder.children?.length) {
+                const found = findNoteInTree(folder.children, noteId);
+                if (found) return found;
+            }
+        }
+        return null;
+    }
+
+    // Callback QuickSearch : ouvre un dossier
+    function handleQuickOpenFolder(folderId: number) {
+        setCurrentFolderId(folderId);
+        setSidebarOpen(true);
+    }
+
+    // Callback QuickSearch : ouvre une note
+    function handleQuickOpenNote(noteId: number, folderId?: number | null) {
+        // Sélectionne le dossier parent si fourni
+        if (folderId) setCurrentFolderId(folderId);
+        // Cherche la note dans l'arbre et la sélectionne
+        const note = findNoteInTree(tree, noteId);
+        if (note) {
+            handleSelectNote(note);
+        }
+        setSidebarOpen(true);
+    }
+
     return (
         // Layout principal : sidebar + zone de contenu
         <div className={`app-layout ${sidebarOpen ? '' : 'sidebar-collapsed'}`}>
@@ -349,6 +383,13 @@ export function FolderList() {
                     </div>
                 )}
             </main>
+
+            {/* QuickSearch : double-shift pour ouvrir */}
+            <QuickSearch
+                userId={user?.id}
+                onOpenFolder={handleQuickOpenFolder}
+                onOpenNote={handleQuickOpenNote}
+            />
         </div>
     );
 }
