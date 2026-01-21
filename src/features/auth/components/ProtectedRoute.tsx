@@ -10,7 +10,7 @@ interface Props {
 export function ProtectedRoute({ children }: Props) {
     const { user } = useAuth();
 
-    // Si pas connecté, redirige vers la page de connexion
+    // Si pas connecté, redirige vers la page de welcome
     if (!user) {
         return <Navigate to="/welcome" replace />;
     }
