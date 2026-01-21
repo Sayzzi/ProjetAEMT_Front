@@ -1,109 +1,162 @@
-/* Layout principal de l'application */
+/* 🎃 Layout principal */
 
-/* Container flex : sidebar à gauche, contenu à droite */
+/* Container flex: sidebar + content */
 .app-layout {
-    display: flex;
-    height: calc(100vh - 50px); /* Hauteur totale moins la navbar */
+  display: flex;
+  height: calc(100vh - 50px);
 }
 
-/* Sidebar gauche avec l'arbre des dossiers */
+/* Sidebar gauche */
 .sidebar {
-    width: 280px;
-    background: #2d2d2d;
-    border-right: 1px solid #444;
-    padding: 16px;
-    overflow-y: auto; /* Scroll si contenu trop long */
+  width: 260px;
+  background: linear-gradient(180deg, var(--tombstone) 0%, var(--grave) 100%);
+  border-right: 1px solid var(--fog);
+  padding: 16px;
+  overflow-y: auto;
+  position: relative;
 }
 
-/* Titre de la sidebar */
+/* Araignée qui se balance */
+.sidebar::before {
+  content: '🕷️';
+  position: absolute;
+  top: 55px;
+  right: 12px;
+  font-size: 14px;
+  opacity: 0.3;
+  animation: spider 3s ease-in-out infinite;
+}
+
+@keyframes spider {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(8px) rotate(3deg); }
+}
+
+/* Titre sidebar */
 .sidebar h2 {
-    padding: 0 0 16px 0;
-    margin: 0;
-    border-bottom: 1px solid #444;
+  padding: 0 0 14px 0;
+  margin: 0;
+  border-bottom: 1px solid var(--fog);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* Zone de contenu principale (à droite) */
+/* Icône dossier */
+.sidebar h2::before {
+  content: '📁';
+}
+
+/* Zone principale (éditeur) */
 .content {
-    flex: 1; /* Prend tout l'espace restant */
-    padding: 32px;
-    overflow-y: auto;
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+  background: var(--night);
 }
 
-/* Titre de la note sélectionnée */
+/* Titre de la note */
 .content h1 {
-    color: #ff6b1a;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #444;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--fog);
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.content h1:hover {
+  text-shadow: 0 0 20px rgba(255, 107, 26, 0.4);
 }
 
 /* Contenu de la note */
 .note-content {
-    line-height: 1.6;
-    white-space: pre-wrap; /* Préserve les retours à la ligne */
+  line-height: 1.7;
+  white-space: pre-wrap;
 }
 
-/* Message quand aucune note n'est sélectionnée */
+/* Message "aucune note" */
 .no-selection {
-    color: #888;
-    text-align: center;
-    margin-top: 100px;
+  color: #555;
+  text-align: center;
+  margin-top: 120px;
+  font-size: 1.1rem;
+  font-weight: 300;
 }
 
-/* Input pour éditer le titre de la note */
+/* Fantôme flottant */
+.no-selection::before {
+  content: '👻';
+  display: block;
+  font-size: 3.5rem;
+  margin-bottom: 12px;
+  opacity: 0.4;
+  animation: ghost 2.5s ease-in-out infinite;
+}
+
+@keyframes ghost {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Input édition titre */
 .title-input {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #ff6b1a;
-    background: transparent;
-    border: none;
-    border-bottom: 2px solid #ff6b1a;
-    width: 100%;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--pumpkin);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--pumpkin);
+  width: 100%;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
 }
 
 .title-input:focus {
-    outline: none;
+  outline: none;
 }
 
-/* Textarea pour éditer le contenu */
+/* Textarea contenu */
 .content-textarea {
-    width: 100%;
-    min-height: 300px;
-    background: #2d2d2d;
-    border: 1px solid #444;
-    border-radius: 8px;
-    color: #e8e8e8;
-    padding: 16px;
-    font-size: 1rem;
-    line-height: 1.6;
-    resize: vertical;
+  width: 100%;
+  min-height: 300px;
+  background: var(--tombstone);
+  border: 1px solid var(--fog);
+  border-radius: 8px;
+  color: var(--ghost);
+  padding: 16px;
+  font-size: 1rem;
+  line-height: 1.7;
+  resize: vertical;
 }
 
 .content-textarea:focus {
-    outline: none;
-    border-color: #ff6b1a;
+  outline: none;
+  border-color: var(--pumpkin);
 }
 
-/* Header avec les boutons de création */
+/* Header boutons */
 .folder-header {
-    padding: 12px 0;
-    margin-bottom: 12px;
-    border-bottom: 1px solid #444;
+  padding: 10px 0;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--fog);
 }
 
 .folder-header button {
-    margin-right: 8px;
+  margin-right: 6px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
 }
 
+/* Zone création (input + bouton) */
 .header-input {
-    margin-top: 12px;
-    display: flex;
-    gap: 8px;
+  margin-top: 10px;
+  display: flex;
+  gap: 6px;
 }
 
 .header-input input {
-    flex: 1;
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 0.9rem;
 }
-

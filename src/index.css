@@ -1,84 +1,168 @@
-/* Halloween Theme */
+/* 🎃 SPOOKY NOTES - Halloween Theme */
 
+/* Fonts: Creepster (titres) + Outfit (texte moderne) */
+@import url('https://fonts.googleapis.com/css2?family=Creepster&family=Outfit:wght@300;400;600&display=swap');
+
+/* Palette Halloween */
+:root {
+  --pumpkin: #ff6b1a;
+  --pumpkin-light: #ff8c42;
+  --blood: #8b0000;
+  --ghost: #f0f0f0;
+  --night: #0a0a0a;
+  --grave: #141414;
+  --tombstone: #1e1e1e;
+  --fog: #2a2a2a;
+  --witch: #7b2d8e;
+  --zombie: #4a7c3f;
+}
+
+/* Reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Body avec brouillard subtil */
 body {
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  background-color: #1a1a1a;
-  color: #e8e8e8;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  background: var(--night);
+  color: var(--ghost);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
+/* Brouillard violet/orange en fond */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 10% 90%, rgba(123, 45, 142, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 10%, rgba(255, 107, 26, 0.05) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Chauve-souris animée */
+body::after {
+  content: '🦇';
+  position: fixed;
+  top: 8%;
+  right: 4%;
+  font-size: 22px;
+  opacity: 0.25;
+  animation: bat 10s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes bat {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-80px, 25px) rotate(-8deg); }
+  50% { transform: translate(-40px, -15px) rotate(5deg); }
+  75% { transform: translate(-120px, 10px) rotate(-5deg); }
+}
+
+/* Titres en orange citrouille */
+h1, h2, h3 {
+  color: var(--pumpkin);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Liens */
 a {
-  color: #ff6b1a;
+  color: var(--pumpkin);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 a:hover {
-  color: #ff8c42;
+  color: var(--pumpkin-light);
 }
 
+/* Boutons avec dégradé orange */
 button {
-  background: #ff6b1a;
-  color: #1a1a1a;
+  background: linear-gradient(135deg, var(--pumpkin), #cc5500);
+  color: var(--night);
   border: none;
-  padding: 10px 20px;
+  padding: 10px 18px;
   border-radius: 6px;
+  font-family: 'Outfit', sans-serif;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 button:hover {
-  background: #ff8c42;
-  box-shadow: 0 0 12px rgba(255, 107, 26, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(255, 107, 26, 0.35);
 }
 
-input {
-  background: #1a1a1a;
-  border: 1px solid #444;
-  color: #e8e8e8;
+/* Inputs sombres */
+input, textarea {
+  background: var(--grave);
+  border: 1px solid var(--fog);
+  color: var(--ghost);
   padding: 10px 14px;
   border-radius: 6px;
+  font-family: 'Outfit', sans-serif;
   font-size: 1rem;
   width: 100%;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-input:focus {
+input:focus, textarea:focus {
   outline: none;
-  border-color: #ff6b1a;
+  border-color: var(--pumpkin);
+  box-shadow: 0 0 0 3px rgba(255, 107, 26, 0.15);
 }
 
+/* Labels */
 label {
   display: block;
   margin-bottom: 6px;
-  color: #888;
-  font-size: 0.9rem;
+  color: #777;
+  font-size: 0.85rem;
+  font-weight: 300;
 }
 
+/* Formulaires (login, etc.) */
 form {
-  background: #2d2d2d;
+  background: var(--tombstone);
   padding: 32px;
   border-radius: 12px;
-  max-width: 400px;
+  max-width: 380px;
   margin: 60px auto;
-  border: 1px solid #3a3a3a;
+  border: 1px solid var(--fog);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  position: relative;
 }
 
+/* Toile d'araignée sur les forms */
+form::before {
+  content: '🕸️';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 36px;
+  opacity: 0.4;
+  transform: rotate(45deg);
+}
+
+/* Titre form en Creepster */
 form h2 {
-  color: #ff6b1a;
-  margin-bottom: 24px;
+  font-family: 'Creepster', cursive;
+  font-size: 2rem;
   text-align: center;
+  margin-bottom: 24px;
+  letter-spacing: 2px;
 }
 
 form div {
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 form button {
@@ -86,17 +170,45 @@ form button {
   margin-top: 8px;
 }
 
-h2 {
-  color: #ff6b1a;
-  font-weight: 600;
-  padding: 16px;
-}
-
+/* Listes sans puces */
 ul {
   list-style: none;
-  padding-left: 16px;
 }
 
 li {
-  margin: 4px 0;
+  margin: 3px 0;
+}
+
+/* Scrollbar custom */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--grave);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--fog);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--pumpkin);
+}
+
+/* Sélection texte */
+::selection {
+  background: var(--pumpkin);
+  color: var(--night);
+}
+
+/* Animation glow réutilisable */
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 107, 26, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(255, 107, 26, 0.5); }
+}
+
+.glow {
+  animation: glow 2s ease-in-out infinite;
 }
