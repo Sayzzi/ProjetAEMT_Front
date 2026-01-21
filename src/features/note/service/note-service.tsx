@@ -17,14 +17,11 @@ export class NoteService {
 
     // PUT /notes - Modifie une note existante
     async updateNote(command: NoteUpdateCommand): Promise<void> {
-        console.log("📝 Sauvegarde note:", command);  // Debug
         const response = await api.put("/notes", command);
         if (!response.ok) {
             const errorText = await response.text();
-            console.error("❌ Erreur API:", response.status, errorText);
             throw new Error(`Erreur ${response.status}: ${errorText}`);
         }
-        console.log("✅ Note sauvegardée avec succès");
     }
 
     // DELETE /notes/:id - Supprime une note

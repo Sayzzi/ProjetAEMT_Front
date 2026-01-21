@@ -56,24 +56,18 @@ export function FolderList() {
             alert("User non connecté");
             return;
         }
-        const createdFolder = await folderService.createFolder(data);
-        console.log("Dossier créé :", createdFolder);
+        await folderService.createFolder(data);
         await refreshTree();
     }
 
     // Crée une nouvelle note dans le dossier courant
     async function handleCreateNote(data: any) {
-        try {
-            const createdNote = await noteService.createNote(data);
-            console.log("Note créée :", createdNote);
-            await refreshTree();
-            // Sélectionne automatiquement la note créée
-            setSelectedNote(createdNote);
-            setNoteTitleValue(createdNote.title || "");
-            setContentValue(createdNote.content || "");
-        } catch (error) {
-            console.error("Erreur lors de la création de la note", error);
-        }
+        const createdNote = await noteService.createNote(data);
+        await refreshTree();
+        // Sélectionne automatiquement la note créée
+        setSelectedNote(createdNote);
+        setNoteTitleValue(createdNote.title || "");
+        setContentValue(createdNote.content || "");
     }
 
     // Supprime un dossier (clic droit > supprimer)
@@ -117,9 +111,26 @@ export function FolderList() {
             };
             await noteService.updateNote(command);
             setSelectedNote({ ...selectedNote, title: noteTitleValue });
-            await refreshTree();
+            // Met à jour le titre dans l'arbre (pour la sidebar)
+            updateNoteInTree(selectedNote.id!, { title: noteTitleValue });
         }
         setEditingTitle(false);
+    }
+
+    // Met à jour une note dans l'arbre local (évite de recharger tout l'arbre)
+    function updateNoteInTree(noteId: number, updates: Partial<Note>) {
+        setTree(prevTree => {
+            const updateInNodes = (nodes: FolderNode[]): FolderNode[] => {
+                return nodes.map(folder => ({
+                    ...folder,
+                    notes: folder.notes?.map(note =>
+                        note.id === noteId ? { ...note, ...updates } : note
+                    ),
+                    children: folder.children ? updateInNodes(folder.children) : []
+                }));
+            };
+            return updateInNodes(prevTree);
+        });
     }
 
     // Sauvegarde le contenu (appelé après 1s sans frappe = debounce)
@@ -131,25 +142,25 @@ export function FolderList() {
             content: content
         };
         try {
-            setSaveStatus("saving");  // "En cours de sauvegarde..."
+            setSaveStatus("saving");
             await noteService.updateNote(command);
-            // Met à jour la date de modif dans l'UI sans recharger
-            setSelectedNote({ ...selectedNote, updatedAt: new Date().toISOString() });
-            setSaveStatus("saved");  // "Note sauvegardée !"
-            console.log("Note sauvegardée");
+            const now = new Date().toISOString();
+            // Met à jour la note sélectionnée
+            setSelectedNote({ ...selectedNote, content, updatedAt: now });
+            // Met à jour la note dans l'arbre local
+            updateNoteInTree(selectedNote.id!, { content, updatedAt: now });
+            setSaveStatus("saved");
             // Remet à idle après 2s
             setTimeout(() => setSaveStatus("idle"), 2000);
-        } catch (error) {
-            console.error("Erreur sauvegarde:", error);
+        } catch {
             setSaveStatus("idle");
         }
     }
 
     // Appelé à chaque frappe : attend 1s avant de sauvegarder (debounce)
     function handleContentChange(newContent: string) {
-        console.log("✏️ Contenu modifié, longueur:", newContent.length);  // Debug
         setContentValue(newContent);
-        setSaveStatus("idle");  // Reset pendant la frappe
+        setSaveStatus("idle");
 
         // Annule le timer précédent si on tape encore
         if (saveTimeoutRef.current) {
@@ -158,7 +169,6 @@ export function FolderList() {
 
         // Lance un nouveau timer de 1s
         saveTimeoutRef.current = window.setTimeout(() => {
-            console.log("⏱️ Debounce terminé, sauvegarde...");  // Debug
             saveNoteContent(newContent);
         }, 1000);
     }

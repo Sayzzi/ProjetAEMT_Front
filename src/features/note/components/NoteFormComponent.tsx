@@ -24,7 +24,6 @@ export function NoteFormComponent({onNoteCreated}: NoteFormComponentProps) {
     }
 
     function handleSubmit(e: FormEvent<HTMLFormElement>) {
-        console.log(inputs);
         e.preventDefault();
         if (!formValid) return ;
         let note = {idUser : inputs.idUser, idFolder : inputs.idFolder,
