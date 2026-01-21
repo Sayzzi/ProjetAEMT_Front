@@ -77,7 +77,7 @@ export function FolderItem({
             ) : (
                 // Mode normal : affiche le dossier
                 <div
-                    className={`folder-item ${isSelected ? "selected" : ""}`}
+                    className={`folder-item ${isSelected ? "selected" : ""} ${open ? "open" : ""}`}
                     style={{ paddingLeft: `${10 + depth * 16}px` }}
                     onClick={() => {
                         setOpen(!open);  // Toggle ouvert/fermé
@@ -89,7 +89,7 @@ export function FolderItem({
                         setContextMenu({ x: e.clientX, y: e.clientY });
                     }}
                 >
-                    {open ? "📂" : "📁"} {node.title}
+                    {node.title}
                 </div>
             )}
 
@@ -162,7 +162,7 @@ export function FolderItem({
                                         setNoteContextMenu({ x: e.clientX, y: e.clientY, noteId: note.id! });
                                     }}
                                 >
-                                    📄 {note.title}
+                                    {note.title}
                                 </li>
                             ))}
                         </ul>

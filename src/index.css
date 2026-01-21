@@ -1,184 +1,439 @@
-/* 🎃 SPOOKY NOTES - Halloween Theme */
+/* ═══════════════════════════════════════════════════════════════
+   SPOOKY NOTES - Halloween Theme
+   Font: Creepster (titles) + Outfit (body)
+   Colors: Pumpkin Orange + Dark Purples
+   ═══════════════════════════════════════════════════════════════ */
 
-/* Fonts: Creepster (titres) + Outfit (texte moderne) */
-@import url('https://fonts.googleapis.com/css2?family=Creepster&family=Outfit:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Creepster&family=Outfit:wght@300;400;500;600;700&display=swap');
 
-/* Palette Halloween */
+/* ═══════════════════════════════════════════════════════════════
+   COLOR PALETTE
+   ═══════════════════════════════════════════════════════════════ */
 :root {
+  /* Primary - Pumpkin Orange */
   --pumpkin: #ff6b1a;
+  --pumpkin-dark: #e55a0f;
   --pumpkin-light: #ff8c42;
-  --blood: #8b0000;
-  --ghost: #f0f0f0;
-  --night: #0a0a0a;
-  --grave: #141414;
-  --tombstone: #1e1e1e;
-  --fog: #2a2a2a;
+
+  /* Darks */
+  --night: #0d0d0d;
+  --grave: #1a1a1a;
+  --tombstone: #252525;
+  --fog: #3a3a3a;
+
+  /* Text */
+  --ghost: #f5f5f5;
+  --bone: #d4d4d4;
+  --mist: #888888;
+
+  /* Accents */
   --witch: #7b2d8e;
-  --zombie: #4a7c3f;
+  --blood: #8b0000;
+  --slime: #4ade80;
+
+  /* Spacing */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 30px rgba(255, 107, 26, 0.3);
 }
 
-/* Reset */
-* {
+/* ═══════════════════════════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════════════════════════ */
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Body avec brouillard subtil */
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 400;
   background: var(--night);
   color: var(--ghost);
   min-height: 100vh;
+  line-height: 1.6;
   overflow-x: hidden;
 }
 
-/* Brouillard violet/orange en fond */
+/* Subtle grain texture */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background:
-    radial-gradient(ellipse at 10% 90%, rgba(123, 45, 142, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 90% 10%, rgba(255, 107, 26, 0.05) 0%, transparent 40%);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
   pointer-events: none;
-  z-index: -1;
+  z-index: 9999;
 }
 
-/* Titres en orange citrouille */
-h1, h2, h3 {
-  color: var(--pumpkin);
-  font-weight: 600;
-  letter-spacing: 0.5px;
+/* ═══════════════════════════════════════════════════════════════
+   TYPOGRAPHY
+   ═══════════════════════════════════════════════════════════════ */
+h1, h2, h3, h4 {
+  font-family: 'Creepster', cursive;
+  color: var(--ghost);
+  letter-spacing: 2px;
+  line-height: 1.2;
 }
 
-/* Liens */
+h1 { font-size: 2.5rem; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1rem; }
+
+p {
+  color: var(--bone);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LINKS
+   ═══════════════════════════════════════════════════════════════ */
 a {
   color: var(--pumpkin);
   text-decoration: none;
-  transition: color 0.2s;
+  transition: all 0.2s ease;
 }
 
 a:hover {
   color: var(--pumpkin-light);
+  text-shadow: 0 0 10px rgba(255, 107, 26, 0.5);
 }
 
-/* Boutons avec dégradé orange */
+/* ═══════════════════════════════════════════════════════════════
+   BUTTONS
+   ═══════════════════════════════════════════════════════════════ */
 button {
-  background: linear-gradient(135deg, var(--pumpkin), #cc5500);
-  color: var(--night);
-  border: none;
-  padding: 10px 18px;
-  border-radius: 6px;
   font-family: 'Outfit', sans-serif;
   font-weight: 600;
+  font-size: 0.875rem;
+  background: linear-gradient(135deg, var(--pumpkin), var(--pumpkin-dark));
+  color: var(--night);
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+button:hover::before {
+  left: 100%;
 }
 
 button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(255, 107, 26, 0.35);
+  box-shadow: var(--shadow-glow);
 }
 
-/* Inputs sombres */
-input, textarea {
-  background: var(--grave);
-  border: 1px solid var(--fog);
+button:active {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+button:disabled::before {
+  display: none;
+}
+
+/* Secondary button */
+button.secondary {
+  background: transparent;
   color: var(--ghost);
-  padding: 10px 14px;
-  border-radius: 6px;
+  border: 2px solid var(--fog);
+}
+
+button.secondary:hover {
+  border-color: var(--pumpkin);
+  color: var(--pumpkin);
+  box-shadow: none;
+}
+
+button.secondary::before {
+  display: none;
+}
+
+/* Ghost button */
+button.ghost {
+  background: rgba(255, 107, 26, 0.1);
+  color: var(--pumpkin);
+  border: 1px solid rgba(255, 107, 26, 0.3);
+}
+
+button.ghost:hover {
+  background: rgba(255, 107, 26, 0.2);
+  border-color: var(--pumpkin);
+}
+
+/* Icon button */
+button.icon-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: var(--radius-md);
+  font-size: 1.1rem;
+}
+
+/* Small button */
+button.sm {
+  padding: 8px 16px;
+  font-size: 0.8rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INPUTS
+   ═══════════════════════════════════════════════════════════════ */
+input, textarea {
   font-family: 'Outfit', sans-serif;
   font-size: 1rem;
+  background: var(--grave);
+  border: 2px solid var(--fog);
+  color: var(--ghost);
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
   width: 100%;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: all 0.25s ease;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--mist);
 }
 
 input:focus, textarea:focus {
   outline: none;
   border-color: var(--pumpkin);
-  box-shadow: 0 0 0 3px rgba(255, 107, 26, 0.15);
+  box-shadow: 0 0 0 4px rgba(255, 107, 26, 0.15);
 }
 
-/* Labels */
+/* ═══════════════════════════════════════════════════════════════
+   LABELS
+   ═══════════════════════════════════════════════════════════════ */
 label {
   display: block;
-  margin-bottom: 6px;
-  color: #777;
-  font-size: 0.85rem;
-  font-weight: 300;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--bone);
+  margin-bottom: 8px;
 }
 
-/* Formulaires (login, etc.) */
+/* ═══════════════════════════════════════════════════════════════
+   FORMS (Login/Register)
+   ═══════════════════════════════════════════════════════════════ */
 form {
-  background: var(--tombstone);
-  padding: 32px;
-  border-radius: 12px;
-  max-width: 380px;
-  margin: 60px auto;
+  background: var(--grave);
+  padding: 48px;
+  border-radius: var(--radius-xl);
+  max-width: 440px;
+  margin: 80px auto;
   border: 1px solid var(--fog);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Pumpkin glow effect */
+form::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(255, 107, 26, 0.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Top accent line */
+form::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--pumpkin), var(--witch), var(--pumpkin));
+  background-size: 200% 100%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+form h2 {
+  font-size: 2.2rem;
+  text-align: center;
+  margin-bottom: 8px;
+  color: var(--ghost);
   position: relative;
 }
 
-/* Titre form en Creepster */
-form h2 {
-  font-family: 'Creepster', cursive;
-  font-size: 2rem;
+form > p:first-of-type {
   text-align: center;
-  margin-bottom: 24px;
-  letter-spacing: 2px;
+  margin-bottom: 32px;
+  color: var(--mist);
 }
 
 form div {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  position: relative;
 }
 
-form button {
+form button[type="submit"] {
   width: 100%;
-  margin-top: 8px;
+  margin-top: 16px;
+  padding: 16px;
+  font-size: 1rem;
 }
 
-/* Listes sans puces */
+form > p:last-of-type {
+  text-align: center;
+  margin-top: 24px;
+  color: var(--mist);
+  font-size: 0.9rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LISTS
+   ═══════════════════════════════════════════════════════════════ */
 ul {
   list-style: none;
 }
 
 li {
-  margin: 3px 0;
+  margin: 2px 0;
 }
 
-/* Scrollbar custom */
+/* ═══════════════════════════════════════════════════════════════
+   SCROLLBAR
+   ═══════════════════════════════════════════════════════════════ */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--grave);
+  background: var(--night);
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--fog);
-  border-radius: 3px;
+  border-radius: 5px;
+  border: 2px solid var(--night);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--pumpkin);
+  background: var(--pumpkin-dark);
 }
 
-/* Sélection texte */
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--fog) var(--night);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEXT SELECTION
+   ═══════════════════════════════════════════════════════════════ */
 ::selection {
   background: var(--pumpkin);
   color: var(--night);
 }
 
-/* Animation glow réutilisable */
-@keyframes glow {
-  0%, 100% { box-shadow: 0 0 5px rgba(255, 107, 26, 0.3); }
-  50% { box-shadow: 0 0 15px rgba(255, 107, 26, 0.5); }
+/* ═══════════════════════════════════════════════════════════════
+   TOOLTIPS
+   ═══════════════════════════════════════════════════════════════ */
+[data-tooltip] {
+  position: relative;
 }
 
-.glow {
-  animation: glow 2s ease-in-out infinite;
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  padding: 6px 12px;
+  background: var(--tombstone);
+  color: var(--ghost);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  border: 1px solid var(--fog);
+}
+
+[data-tooltip]:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-8px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease forwards;
 }

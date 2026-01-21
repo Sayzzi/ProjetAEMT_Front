@@ -1,17 +1,139 @@
-/* 🎃 Éditeur Markdown */
+/* ═══════════════════════════════════════════════════════════════
+   MARKDOWN EDITOR - Halloween Theme
+   ═══════════════════════════════════════════════════════════════ */
 
 .markdown-editor {
-  background: var(--tombstone);
+  background: var(--grave);
   border: 1px solid var(--fog);
-  border-radius: 8px;
-  min-height: 400px;
-  padding: 20px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Zone d'édition TipTap */
+/* ═══════════════════════════════════════════════════════════════
+   EDITOR TOOLBAR
+   ═══════════════════════════════════════════════════════════════ */
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+  background: var(--tombstone);
+  border-bottom: 1px solid var(--fog);
+  flex-wrap: wrap;
+}
+
+.toolbar-group {
+  display: flex;
+  gap: 2px;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--fog);
+  margin: 0 8px;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+/* Toolbar Button */
+.toolbar-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--bone);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.toolbar-btn::before {
+  display: none;
+}
+
+.toolbar-btn:hover {
+  background: var(--fog);
+  color: var(--ghost);
+  transform: none;
+  box-shadow: none;
+}
+
+.toolbar-btn.active {
+  background: var(--pumpkin);
+  color: var(--night);
+  border-color: var(--pumpkin);
+}
+
+.toolbar-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.toolbar-btn:disabled:hover {
+  background: transparent;
+  color: var(--bone);
+}
+
+/* Lock button special style */
+.toolbar-btn.lock-btn {
+  width: auto;
+  padding: 0 12px;
+  font-size: 1rem;
+}
+
+.toolbar-btn.lock-btn.locked {
+  background: rgba(139, 0, 0, 0.2);
+  border-color: var(--blood);
+  color: var(--blood);
+}
+
+/* Toolbar tooltips */
+.toolbar-btn[data-tooltip]::after {
+  bottom: auto;
+  top: 100%;
+  transform: translateX(-50%) translateY(4px);
+  z-index: 100;
+}
+
+.toolbar-btn[data-tooltip]:hover::after {
+  transform: translateX(-50%) translateY(8px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EDITOR WRAPPER
+   ═══════════════════════════════════════════════════════════════ */
+.editor-wrapper {
+  min-height: 350px;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.editor-wrapper.locked {
+  background: rgba(139, 0, 0, 0.05);
+  cursor: not-allowed;
+}
+
+.editor-wrapper.locked .tiptap {
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TIPTAP EDITOR
+   ═══════════════════════════════════════════════════════════════ */
 .markdown-editor .tiptap {
   outline: none;
-  min-height: 350px;
+  min-height: 300px;
   line-height: 1.8;
   font-size: 1rem;
   color: var(--ghost);
@@ -20,48 +142,82 @@
 /* Placeholder */
 .markdown-editor .tiptap p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
-  color: #555;
+  color: var(--mist);
   font-style: italic;
   pointer-events: none;
   float: left;
   height: 0;
 }
 
-/* Titres */
+/* ═══════════════════════════════════════════════════════════════
+   TYPOGRAPHY IN EDITOR
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Headings */
 .markdown-editor h1 {
-  font-size: 1.6rem;
-  margin: 20px 0 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--fog);
+  font-family: 'Creepster', cursive;
+  font-size: 1.8rem;
+  margin: 24px 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--fog);
+  color: var(--ghost);
+  letter-spacing: 1px;
 }
 
 .markdown-editor h2 {
-  font-size: 1.3rem;
-  margin: 16px 0 10px;
+  font-family: 'Creepster', cursive;
+  font-size: 1.4rem;
+  margin: 20px 0 12px;
+  color: var(--pumpkin);
+  letter-spacing: 1px;
 }
 
 .markdown-editor h3 {
-  font-size: 1.1rem;
-  margin: 14px 0 8px;
+  font-family: 'Creepster', cursive;
+  font-size: 1.2rem;
+  margin: 16px 0 10px;
+  color: var(--bone);
+  letter-spacing: 1px;
 }
 
-/* Paragraphes */
+/* Paragraphs */
 .markdown-editor p {
-  margin: 10px 0;
+  margin: 12px 0;
+  color: var(--bone);
 }
 
+/* Bold */
 .markdown-editor strong {
   color: var(--pumpkin);
+  font-weight: 700;
 }
 
+/* Italic */
 .markdown-editor em {
   font-style: italic;
+  color: var(--pumpkin-light);
 }
 
-/* Listes */
+/* Underline */
+.markdown-editor u {
+  text-decoration: underline;
+  text-decoration-color: var(--pumpkin);
+  text-underline-offset: 3px;
+}
+
+/* Strikethrough */
+.markdown-editor s {
+  text-decoration: line-through;
+  color: var(--mist);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LISTS
+   ═══════════════════════════════════════════════════════════════ */
 .markdown-editor ul,
 .markdown-editor ol {
-  margin: 12px 0 12px 24px;
+  margin: 16px 0 16px 24px;
+  color: var(--bone);
 }
 
 .markdown-editor ul {
@@ -73,68 +229,99 @@
 }
 
 .markdown-editor li {
-  margin: 6px 0;
+  margin: 8px 0;
 }
 
-/* Code */
-.markdown-editor code {
-  background: var(--grave);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: monospace;
-  font-size: 0.9em;
+.markdown-editor li::marker {
   color: var(--pumpkin);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   CODE
+   ═══════════════════════════════════════════════════════════════ */
+.markdown-editor code {
+  background: var(--tombstone);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.875em;
+  color: var(--pumpkin);
+  border: 1px solid var(--fog);
+}
+
 .markdown-editor pre {
-  background: var(--grave);
-  padding: 16px;
-  border-radius: 6px;
+  background: var(--tombstone);
+  padding: 20px;
+  border-radius: var(--radius-md);
   overflow-x: auto;
-  margin: 16px 0;
+  margin: 20px 0;
+  border: 1px solid var(--fog);
 }
 
 .markdown-editor pre code {
   padding: 0;
   background: transparent;
+  color: var(--ghost);
+  border: none;
 }
 
-/* Citations */
+/* ═══════════════════════════════════════════════════════════════
+   BLOCKQUOTE
+   ═══════════════════════════════════════════════════════════════ */
 .markdown-editor blockquote {
-  border-left: 3px solid var(--pumpkin);
-  padding: 12px 16px;
-  margin: 16px 0;
+  border-left: 4px solid var(--pumpkin);
+  padding: 16px 20px;
+  margin: 20px 0;
   background: rgba(255, 107, 26, 0.05);
-  border-radius: 0 6px 6px 0;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
   font-style: italic;
-  color: #aaa;
+  color: var(--bone);
 }
 
-/* Liens */
+/* ═══════════════════════════════════════════════════════════════
+   LINKS
+   ═══════════════════════════════════════════════════════════════ */
 .markdown-editor a {
   color: var(--pumpkin);
-  text-decoration: underline;
+  text-decoration: none;
+  border-bottom: 1px solid var(--pumpkin-dark);
+  transition: all 0.2s ease;
 }
 
-/* Séparateur */
+.markdown-editor a:hover {
+  color: var(--pumpkin-light);
+  border-bottom-color: var(--pumpkin-light);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HORIZONTAL RULE
+   ═══════════════════════════════════════════════════════════════ */
 .markdown-editor hr {
   border: none;
-  border-top: 1px solid var(--fog);
-  margin: 24px 0;
+  border-top: 2px solid var(--fog);
+  margin: 32px 0;
 }
 
-/* Tables */
+/* ═══════════════════════════════════════════════════════════════
+   TABLES
+   ═══════════════════════════════════════════════════════════════ */
 .markdown-editor table {
   border-collapse: collapse;
-  width: 100%;
-  margin: 16px 0;
+  width: auto;
+  min-width: 200px;
+  max-width: 100%;
+  margin: 20px 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  font-size: 0.9rem;
 }
 
 .markdown-editor th,
 .markdown-editor td {
   border: 1px solid var(--fog);
-  padding: 10px 12px;
+  padding: 8px 12px;
   text-align: left;
+  min-width: 60px;
 }
 
 .markdown-editor th {
@@ -145,4 +332,119 @@
 
 .markdown-editor tr:nth-child(even) td {
   background: rgba(255, 255, 255, 0.02);
+}
+
+.markdown-editor tr:hover td {
+  background: rgba(255, 107, 26, 0.05);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTEXT MENU
+   ═══════════════════════════════════════════════════════════════ */
+.context-menu {
+  position: fixed;
+  background: var(--grave);
+  border: 1px solid var(--fog);
+  border-radius: var(--radius-md);
+  padding: 8px 0;
+  box-shadow: var(--shadow-lg);
+  z-index: 9999;
+  min-width: 180px;
+}
+
+.context-menu-title {
+  padding: 8px 16px;
+  font-family: 'Creepster', cursive;
+  font-size: 1rem;
+  color: var(--pumpkin);
+  letter-spacing: 1px;
+  border-bottom: 1px solid var(--fog);
+  margin-bottom: 4px;
+}
+
+.context-menu button {
+  width: 100%;
+  justify-content: flex-start;
+  background: transparent;
+  color: var(--ghost);
+  padding: 10px 16px;
+  border-radius: 0;
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.context-menu button::before {
+  display: none;
+}
+
+.context-menu button:hover {
+  background: var(--pumpkin);
+  color: var(--night);
+  transform: none;
+  box-shadow: none;
+}
+
+.context-menu button.danger:hover {
+  background: var(--blood);
+  color: var(--ghost);
+}
+
+.context-menu hr {
+  border: none;
+  border-top: 1px solid var(--fog);
+  margin: 4px 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATS BAR
+   ═══════════════════════════════════════════════════════════════ */
+.stats-bar {
+  display: flex;
+  gap: 24px;
+  padding: 12px 20px;
+  background: var(--tombstone);
+  border-top: 1px solid var(--fog);
+  font-size: 0.8rem;
+  color: var(--mist);
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stat-item strong {
+  color: var(--bone);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .editor-toolbar {
+    padding: 8px 12px;
+    gap: 2px;
+  }
+
+  .toolbar-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+
+  .toolbar-divider {
+    margin: 0 4px;
+  }
+
+  .editor-wrapper {
+    padding: 16px;
+  }
+
+  .stats-bar {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 10px 16px;
+  }
 }

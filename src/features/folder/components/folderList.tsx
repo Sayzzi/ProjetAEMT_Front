@@ -7,6 +7,7 @@ import {FolderTreeComponent} from "./folderTreeComponent.tsx";
 import {FolderHeader} from "./folderHeader.tsx";
 import MarkdownEditor from "./MarkdownEditor.tsx";
 import ExportPdfButton from "./exportPdfButton.tsx";
+import ExportZipButton from "./exportZipButton.tsx";
 import "./folderList.css";
 import {FolderService} from "../services/folderService.tsx";
 import {useAuth} from "../../auth/contexts/AuthContext.tsx";
@@ -27,7 +28,8 @@ export function FolderList() {
     const [noteTitleValue, setNoteTitleValue] = useState("");        // Valeur du titre
     const [contentValue, setContentValue] = useState("");            // Contenu de la note
     const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");  // Statut sauvegarde
-    const {user} = useAuth();  // User connecté (JWT)
+    const [sidebarOpen, setSidebarOpen] = useState(true);           // Sidebar ouverte/fermée
+    const {user} = useAuth();  // User connecté (contient id, userName, token JWT)
 
     // useRef pour le debounce : garde la valeur entre les renders
     const saveTimeoutRef = useRef<number | null>(null);
@@ -144,6 +146,7 @@ export function FolderList() {
 
     // Appelé à chaque frappe : attend 1s avant de sauvegarder (debounce)
     function handleContentChange(newContent: string) {
+        console.log("✏️ Contenu modifié, longueur:", newContent.length);  // Debug
         setContentValue(newContent);
         setSaveStatus("idle");  // Reset pendant la frappe
 
@@ -154,6 +157,7 @@ export function FolderList() {
 
         // Lance un nouveau timer de 1s
         saveTimeoutRef.current = window.setTimeout(() => {
+            console.log("⏱️ Debounce terminé, sauvegarde...");  // Debug
             saveNoteContent(newContent);
         }, 1000);
     }
@@ -173,31 +177,75 @@ export function FolderList() {
         await refreshTree();
     }
 
+    // Ouvre/ferme la sidebar (bouton ◀/▶)
+    function toggleSidebar() {
+        setSidebarOpen(!sidebarOpen);
+    }
+
     return (
-        <div className="app-layout">
-            {/* Sidebar gauche : liste des dossiers */}
-            <aside className="sidebar">
-                <h2>Mes dossiers</h2>
+        // Layout principal : sidebar + zone de contenu
+        <div className={`app-layout ${sidebarOpen ? '' : 'sidebar-collapsed'}`}>
+            {/* === SIDEBAR === Navigation des dossiers/notes */}
+            <aside className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
+                <div className="sidebar-header">
+                    <h2>
+                        <span className="sidebar-icon">📁</span>
+                        Mes dossiers
+                    </h2>
+                    {/* Bouton toggle : masque/affiche la sidebar */}
+                    <button
+                        className="sidebar-toggle"
+                        onClick={toggleSidebar}
+                        data-tooltip={sidebarOpen ? "Fermer" : "Ouvrir"}
+                    >
+                        {sidebarOpen ? '◀' : '▶'}
+                    </button>
+                </div>
 
-                {/* Boutons créer dossier/note */}
-                <FolderHeader
-                    onCreateFolder={handleCreateFolder}
-                    onCreateNote={handleCreateNote}
-                    currentFolderId={currentFolderId}
-                />
+                {sidebarOpen && (
+                    <>
+                        {/* Boutons créer dossier/note */}
+                        <FolderHeader
+                            onCreateFolder={handleCreateFolder}
+                            onCreateNote={handleCreateNote}
+                            currentFolderId={currentFolderId}
+                        />
 
-                {/* Arbre des dossiers et notes */}
-                <FolderTreeComponent
-                    nodes={tree}
-                    onSelectFolder={setCurrentFolderId}
-                    currentFolderId={currentFolderId}
-                    onDeleteFolder={handleDeleteFolder}
-                    onSelectNote={handleSelectNote}
-                    selectedNoteId={selectedNote?.id ?? null}
-                    onUpdateFolder={handleUpdateFolder}
-                    onDeleteNote={handleDeleteNote}
-                />
+                        {/* Arbre des dossiers et notes */}
+                        <div className="sidebar-content">
+                            <FolderTreeComponent
+                                nodes={tree}
+                                onSelectFolder={setCurrentFolderId}
+                                currentFolderId={currentFolderId}
+                                onDeleteFolder={handleDeleteFolder}
+                                onSelectNote={handleSelectNote}
+                                selectedNoteId={selectedNote?.id ?? null}
+                                onUpdateFolder={handleUpdateFolder}
+                                onDeleteNote={handleDeleteNote}
+                            />
+                        </div>
+
+                        {/* Export ZIP en bas de la sidebar */}
+                        <div className="sidebar-footer">
+                            <ExportZipButton
+                                folderId={currentFolderId!}
+                                disabled={!currentFolderId}
+                            />
+                        </div>
+                    </>
+                )}
             </aside>
+
+            {/* Bouton flottant ☰ visible uniquement quand sidebar fermée */}
+            {!sidebarOpen && (
+                <button
+                    className="sidebar-toggle-floating"
+                    onClick={toggleSidebar}
+                    data-tooltip="Ouvrir le menu"
+                >
+                    ☰
+                </button>
+            )}
 
             {/* Zone principale : éditeur de note */}
             <main className="content">
@@ -205,39 +253,86 @@ export function FolderList() {
                     <>
                         {/* Barre d'outils : export PDF + statut sauvegarde */}
                         <div className="note-toolbar">
-                            <ExportPdfButton
-                                noteId={selectedNote.id!}
-                                disabled={saveStatus === "saving"}
-                            />
-                            {/* Message de statut */}
-                            {saveStatus === "saved" && (
-                                <span className="save-status saved">✅ Note sauvegardée !</span>
-                            )}
+                            <div className="toolbar-left">
+                                <ExportPdfButton
+                                    noteId={selectedNote.id!}
+                                    disabled={saveStatus === "saving"}
+                                />
+                            </div>
+                            <div className="toolbar-right">
+                                {/* Message de statut */}
+                                {saveStatus === "saving" && (
+                                    <span className="save-status saving">
+                                        <span className="status-dot"></span>
+                                        Sauvegarde...
+                                    </span>
+                                )}
+                                {saveStatus === "saved" && (
+                                    <span className="save-status saved">
+                                        <span className="status-icon">✓</span>
+                                        Sauvegardé
+                                    </span>
+                                )}
+                            </div>
                         </div>
 
                         {/* Titre : double-clic pour éditer */}
-                        {editingTitle ? (
-                            <input
-                                className="title-input"
-                                value={noteTitleValue}
-                                onChange={(e) => setNoteTitleValue(e.target.value)}
-                                onBlur={saveNoteTitle}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") saveNoteTitle();
-                                    if (e.key === "Escape") setEditingTitle(false);
-                                }}
-                                autoFocus
-                            />
-                        ) : (
-                            <h1 onDoubleClick={() => setEditingTitle(true)}>
-                                {selectedNote.title}
-                            </h1>
-                        )}
+                        <div className="note-header">
+                            {editingTitle ? (
+                                <input
+                                    className="title-input"
+                                    value={noteTitleValue}
+                                    onChange={(e) => setNoteTitleValue(e.target.value)}
+                                    onBlur={saveNoteTitle}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") saveNoteTitle();
+                                        if (e.key === "Escape") setEditingTitle(false);
+                                    }}
+                                    autoFocus
+                                />
+                            ) : (
+                                <h1
+                                    className="note-title"
+                                    onDoubleClick={() => setEditingTitle(true)}
+                                    title="Double-cliquez pour modifier"
+                                >
+                                    {selectedNote.title}
+                                </h1>
+                            )}
+                        </div>
 
                         {/* Dates : création + dernière modif */}
-                        <div className="note-dates">
-                            <span>📅 Créé: {selectedNote.createdAt ? new Date(selectedNote.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}</span>
-                            <span>✏️ Modifié: {selectedNote.updatedAt ? new Date(selectedNote.updatedAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}</span>
+                        <div className="note-meta">
+                            <span className="meta-item">
+                                <span className="meta-icon">📅</span>
+                                <span className="meta-label">Créé:</span>
+                                <span className="meta-value">
+                                    {selectedNote.createdAt
+                                        ? new Date(selectedNote.createdAt).toLocaleDateString('fr-FR', {
+                                            day: '2-digit',
+                                            month: 'short',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })
+                                        : '-'}
+                                </span>
+                            </span>
+                            <span className="meta-item">
+                                <span className="meta-icon">✏️</span>
+                                <span className="meta-label">Modifié:</span>
+                                <span className="meta-value">
+                                    {selectedNote.updatedAt
+                                        ? new Date(selectedNote.updatedAt).toLocaleDateString('fr-FR', {
+                                            day: '2-digit',
+                                            month: 'short',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })
+                                        : '-'}
+                                </span>
+                            </span>
                         </div>
 
                         {/* Éditeur TipTap */}
@@ -247,7 +342,11 @@ export function FolderList() {
                         />
                     </>
                 ) : (
-                    <p className="no-selection">Sélectionnez une note</p>
+                    <div className="no-selection">
+                        <div className="no-selection-icon">🎃</div>
+                        <h2>Aucune note sélectionnée</h2>
+                        <p>Sélectionnez une note dans la barre latérale ou créez-en une nouvelle</p>
+                    </div>
                 )}
             </main>
         </div>
