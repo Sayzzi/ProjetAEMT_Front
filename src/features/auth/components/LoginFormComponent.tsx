@@ -4,8 +4,8 @@
 import { useState } from 'react';
 
 // useNavigate: hook de React Router pour naviguer entre les pages
-// Exemple: navigate('/notes') redirige vers la page /notes
-import { useNavigate } from 'react-router-dom';
+// Link: composant pour créer un lien vers une autre page
+import { useNavigate, Link } from 'react-router-dom';
 
 // Fonction qui appelle l'API backend POST /api/users/login
 // Elle envoie { userName, password } et retourne { id, userName }
@@ -151,6 +151,11 @@ export function LoginFormComponent() {
             </div>
 
             <button type="submit">Se connecter</button>
+
+            {/* Lien vers la page d'inscription */}
+            <p style={{ marginTop: '15px', textAlign: 'center' }}>
+                Pas encore de compte ? <Link to="/register">Créer un compte</Link>
+            </p>
         </form>
     );
 }

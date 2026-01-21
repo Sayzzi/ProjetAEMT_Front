@@ -1,311 +1,450 @@
-/* Éditeur Markdown */
+/* ═══════════════════════════════════════════════════════════════
+   MARKDOWN EDITOR - Halloween Theme
+   ═══════════════════════════════════════════════════════════════ */
 
 .markdown-editor {
-    background: #2d2d2d;
-    border-radius: 8px;
-    min-height: 400px;
-    padding: 16px;
+  background: var(--grave);
+  border: 1px solid var(--fog);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   EDITOR TOOLBAR
+   ═══════════════════════════════════════════════════════════════ */
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+  background: var(--tombstone);
+  border-bottom: 1px solid var(--fog);
+  flex-wrap: wrap;
+}
+
+.toolbar-group {
+  display: flex;
+  gap: 2px;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--fog);
+  margin: 0 8px;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+/* Toolbar Button */
+.toolbar-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--bone);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.toolbar-btn::before {
+  display: none;
+}
+
+.toolbar-btn:hover {
+  background: var(--fog);
+  color: var(--ghost);
+  transform: none;
+  box-shadow: none;
+}
+
+.toolbar-btn.active {
+  background: var(--pumpkin);
+  color: var(--night);
+  border-color: var(--pumpkin);
+}
+
+.toolbar-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.toolbar-btn:disabled:hover {
+  background: transparent;
+  color: var(--bone);
+}
+
+/* Lock button special style */
+.toolbar-btn.lock-btn {
+  width: auto;
+  padding: 0 12px;
+  font-size: 1rem;
+}
+
+.toolbar-btn.lock-btn.locked {
+  background: rgba(139, 0, 0, 0.2);
+  border-color: var(--blood);
+  color: var(--blood);
+}
+
+/* Toolbar tooltips */
+.toolbar-btn[data-tooltip]::after {
+  bottom: auto;
+  top: 100%;
+  transform: translateX(-50%) translateY(4px);
+  z-index: 100;
+}
+
+.toolbar-btn[data-tooltip]:hover::after {
+  transform: translateX(-50%) translateY(8px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EDITOR WRAPPER
+   ═══════════════════════════════════════════════════════════════ */
+.editor-wrapper {
+  min-height: 350px;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.editor-wrapper.locked {
+  background: rgba(139, 0, 0, 0.05);
+  cursor: not-allowed;
+}
+
+.editor-wrapper.locked .tiptap {
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TIPTAP EDITOR
+   ═══════════════════════════════════════════════════════════════ */
 .markdown-editor .tiptap {
-    outline: none;
-    min-height: 350px;
-    line-height: 1.8;
+  outline: none;
+  min-height: 300px;
+  line-height: 1.8;
+  font-size: 1rem;
+  color: var(--ghost);
 }
 
 /* Placeholder */
 .markdown-editor .tiptap p.is-editor-empty:first-child::before {
-    content: attr(data-placeholder);
-    color: #666;
-    pointer-events: none;
-    float: left;
-    height: 0;
+  content: attr(data-placeholder);
+  color: var(--mist);
+  font-style: italic;
+  pointer-events: none;
+  float: left;
+  height: 0;
 }
 
-/* Titres */
-.markdown-editor h1 { font-size: 1.8rem; color: #ff6b1a; margin: 16px 0; }
-.markdown-editor h2 { font-size: 1.5rem; color: #ff6b1a; margin: 14px 0; }
-.markdown-editor h3 { font-size: 1.2rem; color: #ff6b1a; margin: 12px 0; }
+/* ═══════════════════════════════════════════════════════════════
+   TYPOGRAPHY IN EDITOR
+   ═══════════════════════════════════════════════════════════════ */
 
-.markdown-editor p { margin: 8px 0; }
+/* Headings */
+.markdown-editor h1 {
+  font-family: 'Creepster', cursive;
+  font-size: 1.8rem;
+  margin: 24px 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--fog);
+  color: var(--ghost);
+  letter-spacing: 1px;
+}
 
-/* Gras et italique */
-.markdown-editor strong { color: #ff8c42; }
-.markdown-editor em { font-style: italic; }
+.markdown-editor h2 {
+  font-family: 'Creepster', cursive;
+  font-size: 1.4rem;
+  margin: 20px 0 12px;
+  color: var(--pumpkin);
+  letter-spacing: 1px;
+}
 
-/* Listes */
+.markdown-editor h3 {
+  font-family: 'Creepster', cursive;
+  font-size: 1.2rem;
+  margin: 16px 0 10px;
+  color: var(--bone);
+  letter-spacing: 1px;
+}
+
+/* Paragraphs */
+.markdown-editor p {
+  margin: 12px 0;
+  color: var(--bone);
+}
+
+/* Bold */
+.markdown-editor strong {
+  color: var(--pumpkin);
+  font-weight: 700;
+}
+
+/* Italic */
+.markdown-editor em {
+  font-style: italic;
+  color: var(--pumpkin-light);
+}
+
+/* Underline */
+.markdown-editor u {
+  text-decoration: underline;
+  text-decoration-color: var(--pumpkin);
+  text-underline-offset: 3px;
+}
+
+/* Strikethrough */
+.markdown-editor s {
+  text-decoration: line-through;
+  color: var(--mist);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LISTS
+   ═══════════════════════════════════════════════════════════════ */
 .markdown-editor ul,
 .markdown-editor ol {
-    margin-left: 24px;
-    margin-bottom: 8px;
-    list-style: "🎃 ";
+  margin: 16px 0 16px 24px;
+  color: var(--bone);
 }
 
-.markdown-editor ul ul{
-    list-style: "👻 ";
+.markdown-editor ul {
+  list-style: disc;
 }
-.markdown-editor li { margin: 4px 0; }
 
-/* Code */
+.markdown-editor ol {
+  list-style: decimal;
+}
+
+.markdown-editor li {
+  margin: 8px 0;
+}
+
+.markdown-editor li::marker {
+  color: var(--pumpkin);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CODE
+   ═══════════════════════════════════════════════════════════════ */
 .markdown-editor code {
-    background: #1a1a1a;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: monospace;
-    color: #ff6b1a;
+  background: var(--tombstone);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.875em;
+  color: var(--pumpkin);
+  border: 1px solid var(--fog);
 }
 
 .markdown-editor pre {
-    background: #1a1a1a;
-    padding: 16px;
-    border-radius: 8px;
-    overflow-x: auto;
-    margin: 12px 0;
+  background: var(--tombstone);
+  padding: 20px;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin: 20px 0;
+  border: 1px solid var(--fog);
 }
 
 .markdown-editor pre code {
-    padding: 0;
-    background: transparent;
+  padding: 0;
+  background: transparent;
+  color: var(--ghost);
+  border: none;
 }
 
-/* Citation */
+/* ═══════════════════════════════════════════════════════════════
+   BLOCKQUOTE
+   ═══════════════════════════════════════════════════════════════ */
 .markdown-editor blockquote {
-    border-left: 4px solid #ff6b1a;
-    padding-left: 16px;
-    margin: 12px 0;
-    color: #888;
+  border-left: 4px solid var(--pumpkin);
+  padding: 16px 20px;
+  margin: 20px 0;
+  background: rgba(255, 107, 26, 0.05);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-style: italic;
+  color: var(--bone);
 }
 
-.markdown-editor s { color: #666; }
-
-.markdown-editor hr {
-    border: none;
-    border-top: 1px solid #444;
-    margin: 16px 0;
-}
-
-/* Barre de statistiques */
-.stats-bar {
-    display: flex;
-    gap: 24px;
-    padding: 12px 16px;
-    background: #1a1a1a;
-    border-radius: 0 0 8px 8px;
-    margin-top: 8px;
-    font-size: 13px;
-    color: #888;
-}
-
-.stat-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.stat-item strong {
-    color: #ff6b1a;
-}
-
-
-
-/* Style du lien */
+/* ═══════════════════════════════════════════════════════════════
+   LINKS
+   ═══════════════════════════════════════════════════════════════ */
 .markdown-editor a {
-    position: relative;
+  color: var(--pumpkin);
+  text-decoration: none;
+  border-bottom: 1px solid var(--pumpkin-dark);
+  transition: all 0.2s ease;
 }
 
-/* Fantôme n°1 */
-.markdown-editor a::before,
-.markdown-editor a::after {
-    content: "👻";
-    position: absolute;
-    font-size: 14px;
-    opacity: 0;
-    transform: translateY(0) scale(0.6);
-    pointer-events: none; /* ne gêne pas le clic */
-    transition: opacity 0.2s ease-out;
+.markdown-editor a:hover {
+  color: var(--pumpkin-light);
+  border-bottom-color: var(--pumpkin-light);
 }
 
-/* Position de base des fantômes */
-.markdown-editor a::before {
-    left: -16px;
-    top: -4px;
-}
-.markdown-editor a::after {
-    right: -16px;
-    top: -4px;
-}
-
-/* Au hover : les fantômes apparaissent et s'envolent */
-.markdown-editor a:hover::before {
-    animation: ghost-fly-1 1.2s ease-out forwards;
-    opacity: 1;
-}
-.markdown-editor a:hover::after {
-    animation: ghost-fly-2 1.4s ease-out forwards;
-    opacity: 1;
+/* ═══════════════════════════════════════════════════════════════
+   HORIZONTAL RULE
+   ═══════════════════════════════════════════════════════════════ */
+.markdown-editor hr {
+  border: none;
+  border-top: 2px solid var(--fog);
+  margin: 32px 0;
 }
 
-/* Animation du fantôme gauche */
-@keyframes ghost-fly-1 {
-    0% {
-        opacity: 0;
-        transform: translate(0, 0) scale(0.6);
-    }
-    30% {
-        opacity: 1;
-    }
-    100% {
-        transform: translate(-20px, -40px) scale(1);
-        opacity: 0;
-    }
-}
-
-/* Animation du fantôme droit */
-@keyframes ghost-fly-2 {
-    0% {
-        opacity: 0;
-        transform: translate(0, 0) scale(0.6);
-    }
-    30% {
-        opacity: 1;
-    }
-    100% {
-        transform: translate(20px, -50px) scale(1.1) rotate(5deg);
-        opacity: 0;
-    }
-}
-
-/* ========== TABLEAUX ========== */
-
-/* Toolbar des tableaux */
-.table-toolbar {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-}
-
-.table-toolbar button {
-    background: #1a1a1a;
-    border: 1px solid #444;
-    color: #fff;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 13px;
-    transition: all 0.2s;
-}
-
-.table-toolbar button:hover {
-    background: #ff6b1a;
-    border-color: #ff6b1a;
-}
-
-/* Style du tableau */
+/* ═══════════════════════════════════════════════════════════════
+   TABLES
+   ═══════════════════════════════════════════════════════════════ */
 .markdown-editor table {
-    border-collapse: collapse;
-    width: 100%;
-    margin: 16px 0;
-    background: #1a1a1a;
-    border-radius: 8px;
-    overflow: hidden;
+  border-collapse: collapse;
+  width: auto;
+  min-width: 200px;
+  max-width: 100%;
+  margin: 20px 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  font-size: 0.9rem;
 }
 
 .markdown-editor th,
 .markdown-editor td {
-    border: 1px solid #444;
-    padding: 10px 14px;
-    text-align: left;
-    min-width: 80px;
+  border: 1px solid var(--fog);
+  padding: 8px 12px;
+  text-align: left;
+  min-width: 60px;
 }
 
-/* En-tête du tableau */
 .markdown-editor th {
-    background: #ff6b1a;
-    color: #000;
-    font-weight: bold;
+  background: var(--pumpkin);
+  color: var(--night);
+  font-weight: 600;
 }
 
-/* Lignes alternées */
 .markdown-editor tr:nth-child(even) td {
-    background: #2a2a2a;
+  background: rgba(255, 255, 255, 0.02);
 }
 
-/* Survol des cellules */
-.markdown-editor td:hover {
-    background: #3a3a3a;
+.markdown-editor tr:hover td {
+  background: rgba(255, 107, 26, 0.05);
 }
 
-/* Cellule sélectionnée (TipTap) */
-.markdown-editor .selectedCell {
-    background: rgba(255, 107, 26, 0.3) !important;
-}
-
-/* Poignée de redimensionnement */
-.markdown-editor .column-resize-handle {
-    background-color: #ff6b1a;
-    width: 3px;
-    position: absolute;
-    right: -1px;
-    top: 0;
-    bottom: 0;
-    cursor: col-resize;
-}
-
-/* Tableau sélectionné */
-.markdown-editor .tableWrapper {
-    overflow-x: auto;
-    margin: 16px 0;
-}
-
-/* ========== MENU CONTEXTUEL ========== */
-
+/* ═══════════════════════════════════════════════════════════════
+   CONTEXT MENU
+   ═══════════════════════════════════════════════════════════════ */
 .context-menu {
-    position: fixed;
-    background: #222;
-    border: 1px solid #444;
-    border-radius: 6px;
-    padding: 4px 0;
-    min-width: 160px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-    z-index: 1000;
+  position: fixed;
+  background: var(--grave);
+  border: 1px solid var(--fog);
+  border-radius: var(--radius-md);
+  padding: 8px 0;
+  box-shadow: var(--shadow-lg);
+  z-index: 9999;
+  min-width: 180px;
 }
 
 .context-menu-title {
-    padding: 6px 12px;
-    font-size: 12px;
-    color: #ff6b1a;
-    border-bottom: 1px solid #333;
+  padding: 8px 16px;
+  font-family: 'Creepster', cursive;
+  font-size: 1rem;
+  color: var(--pumpkin);
+  letter-spacing: 1px;
+  border-bottom: 1px solid var(--fog);
+  margin-bottom: 4px;
 }
 
 .context-menu button {
-    display: block;
-    width: 100%;
-    padding: 6px 12px;
-    background: transparent;
-    border: none;
-    color: #ccc;
-    text-align: left;
-    cursor: pointer;
-    font-size: 13px;
+  width: 100%;
+  justify-content: flex-start;
+  background: transparent;
+  color: var(--ghost);
+  padding: 10px 16px;
+  border-radius: 0;
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.context-menu button::before {
+  display: none;
 }
 
 .context-menu button:hover {
-    background: #333;
-    color: #fff;
-}
-
-.context-menu button.danger {
-    color: #ff6b6b;
+  background: var(--pumpkin);
+  color: var(--night);
+  transform: none;
+  box-shadow: none;
 }
 
 .context-menu button.danger:hover {
-    background: #4a1a1a;
+  background: var(--blood);
+  color: var(--ghost);
 }
 
 .context-menu hr {
-    border: none;
-    border-top: 1px solid #333;
-    margin: 4px 0;
+  border: none;
+  border-top: 1px solid var(--fog);
+  margin: 4px 0;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   STATS BAR
+   ═══════════════════════════════════════════════════════════════ */
+.stats-bar {
+  display: flex;
+  gap: 24px;
+  padding: 12px 20px;
+  background: var(--tombstone);
+  border-top: 1px solid var(--fog);
+  font-size: 0.8rem;
+  color: var(--mist);
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stat-item strong {
+  color: var(--bone);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .editor-toolbar {
+    padding: 8px 12px;
+    gap: 2px;
+  }
+
+  .toolbar-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+
+  .toolbar-divider {
+    margin: 0 4px;
+  }
+
+  .editor-wrapper {
+    padding: 16px;
+  }
+
+  .stats-bar {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 10px 16px;
+  }
+}

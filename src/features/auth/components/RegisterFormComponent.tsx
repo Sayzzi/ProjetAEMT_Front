@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../services/auth-service.ts';
 
 export function RegisterFormComponent() {
@@ -64,6 +64,11 @@ export function RegisterFormComponent() {
             </div>
 
             <button type="submit">S'inscrire</button>
+
+            {/* Lien vers la page de connexion */}
+            <p style={{ marginTop: '15px', textAlign: 'center' }}>
+                Déjà un compte ? <Link to="/login">Se connecter</Link>
+            </p>
         </form>
     );
 }
