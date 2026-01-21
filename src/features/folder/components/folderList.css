@@ -160,3 +160,14 @@
   padding: 8px 12px;
   font-size: 0.9rem;
 }
+
+/* Dates de la note */
+.note-dates {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 16px;
+  font-size: 0.8rem;
+  color: #666;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--fog);
+}

@@ -3,69 +3,42 @@ import type {Folder} from "../../types/folder.ts";
 import type {NoteDto} from "../../types/dto/noteDto.ts";
 import type {FolderDto} from "../../types/dto/folderDto.ts";
 import type {UpdateFolderCommand} from "../../types/commands/updateFolderCommand.ts";
+import {api} from "../../auth/services/api.ts";
 
 export class FolderService {
 
-    private readonly FOLDER_API_URL = import.meta.env.VITE_API_URL + "/folders";
-
     // POST /folders - Ajout d'un folder
     async createFolder(command: CreateFolderCommand): Promise<Folder> {
-        const response = await fetch(this.FOLDER_API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(command),
-        });
-
+        const response = await api.post("/folders", command);
         if (!response.ok) {
             throw new Error("Erreur lors de la création du dossier");
         }
         return response.json();
     }
 
-
-
-    // GET /folders/id - Recuperation de tous les folders  et les notes d'un user
+    // GET /folders/all/:id - Récupère tous les folders et notes d'un user
     async getAllFoldersAndNotesByUser(userId: number): Promise<{ folders: FolderDto[], notes: NoteDto[] }> {
-        const response = await fetch(`${this.FOLDER_API_URL}/all/${userId}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" }
-        });
-
+        const response = await api.get(`/folders/all/${userId}`);
         if (!response.ok) {
             throw new Error("Erreur lors de la récupération des dossiers et notes");
         }
-
-        return response.json(); // contient { folders: [...], notes: [...] } separés
+        return response.json();
     }
 
     // DELETE /folders/:id - Suppression d'un dossier
     async deleteFolder(folderId: number): Promise<boolean> {
-
-        const response = await fetch(`${this.FOLDER_API_URL}/${folderId}`, {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-        });
-
+        const response = await api.delete(`/folders/${folderId}`);
         if (!response.ok) {
             throw new Error("Erreur lors du delete d'un folder");
         }
-
         return true;
     }
 
-
-    //PUT /folders - Modfication d'un dossier
-    async updateFolder(command : UpdateFolderCommand): Promise<void> {
-        const response = await fetch(this.FOLDER_API_URL, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(command),
-        });
-
-
+    // PUT /folders - Modification d'un dossier
+    async updateFolder(command: UpdateFolderCommand): Promise<void> {
+        const response = await api.put("/folders", command);
         if (!response.ok) {
             throw new Error("Erreur lors de la modification du dossier");
         }
     }
-
 }

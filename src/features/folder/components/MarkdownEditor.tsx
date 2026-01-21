@@ -37,7 +37,7 @@ function MarkdownEditor({content, onChange}: Props) {
     const [contextMenu, setContextMenu] = useState<ContextMenu>({visible: false, x: 0, y: 0});
     const editorRef = useRef<HTMLDivElement>(null);
 
-    // Calcule les stats à partir du texte
+    // Calcule les stats en temps réel
     function updateStats(text: string) {
         const lines = text.split('\n').filter(line => line.trim()).length;
         const words = text.split(/\s+/).filter(w => w.trim()).length;

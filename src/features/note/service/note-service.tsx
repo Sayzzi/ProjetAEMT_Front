@@ -1,39 +1,33 @@
+// Service pour communiquer avec l'API /notes
 import type Note from "../../types/note";
 import type { NoteCreateCommand } from "../../types/commands/note-create-command";
 import type {NoteUpdateCommand} from "../../types/commands/noteUpdateCommand.ts";
+import {api} from "../../auth/services/api.ts";  // Fetch avec JWT auto
 
 export class NoteService {
 
-    private readonly NOTE_API_URL = import.meta.env.VITE_API_URL + "/notes";
-
-    // POST /notes - Création d'une note
+    // POST /notes - Crée une nouvelle note
     async createNote(command: NoteCreateCommand): Promise<Note> {
-        const response = await fetch(this.NOTE_API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(command),
-        });
-
+        const response = await api.post("/notes", command);
         if (!response.ok) {
             throw new Error("Erreur lors de la création de la note");
         }
-
         return response.json();
     }
 
-    //PUT /notes - Modification d'une note
-    async updateNote(command : NoteUpdateCommand) : Promise<void> {
-        const response = await fetch(this.NOTE_API_URL, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(command),
-        })
+    // PUT /notes - Modifie une note existante
+    async updateNote(command: NoteUpdateCommand): Promise<void> {
+        const response = await api.put("/notes", command);
         if (!response.ok) {
             throw new Error("Erreur lors de la modification de la note");
+        }
+    }
+
+    // DELETE /notes/:id - Supprime une note
+    async deleteNote(noteId: number): Promise<void> {
+        const response = await api.delete(`/notes/${noteId}`);
+        if (!response.ok) {
+            throw new Error("Erreur lors de la suppression de la note");
         }
     }
 }
