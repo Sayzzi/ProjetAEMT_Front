@@ -448,3 +448,102 @@
     padding: 10px 16px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   @MENTIONS - Liens internes vers d'autres notes
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Style des @mentions dans le texte */
+.note-mention {
+  background: linear-gradient(135deg, rgba(255, 107, 26, 0.2) 0%, rgba(123, 45, 142, 0.2) 100%);
+  color: var(--pumpkin);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.note-mention:hover {
+  background: var(--pumpkin);
+  color: var(--night);
+  border-color: var(--pumpkin);
+}
+
+/* Dropdown des suggestions */
+.mention-dropdown {
+  background: var(--grave);
+  border: 1px solid var(--fog);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  min-width: 200px;
+  max-width: 320px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 6px 0;
+}
+
+.mention-header {
+  padding: 8px 14px;
+  font-family: 'Creepster', cursive;
+  font-size: 0.9rem;
+  color: var(--pumpkin);
+  letter-spacing: 1px;
+  border-bottom: 1px solid var(--fog);
+  margin-bottom: 4px;
+}
+
+.mention-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  color: var(--ghost);
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mention-item::before {
+  display: none;
+}
+
+.mention-item:hover,
+.mention-item.selected {
+  background: var(--pumpkin);
+  color: var(--night);
+}
+
+.mention-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.mention-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mention-empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--mist);
+  font-style: italic;
+}
+
+/* Tippy theme pour le dropdown */
+.tippy-box[data-theme~='mention'] {
+  background: transparent;
+  padding: 0;
+}
+
+.tippy-box[data-theme~='mention'] > .tippy-content {
+  padding: 0;
+}

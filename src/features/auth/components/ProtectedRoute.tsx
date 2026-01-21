@@ -12,7 +12,7 @@ export function ProtectedRoute({ children }: Props) {
 
     // Si pas connecté, redirige vers la page de connexion
     if (!user) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/welcome" replace />;
     }
 
     // Sinon, affiche le composant enfant

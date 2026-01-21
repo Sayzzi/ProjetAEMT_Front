@@ -7,13 +7,18 @@ import { Table } from '@tiptap/extension-table';
 import { TableRow } from '@tiptap/extension-table-row';
 import { TableCell } from '@tiptap/extension-table-cell';
 import { TableHeader } from '@tiptap/extension-table-header';
+import Mention from '@tiptap/extension-mention';
 
-import {useEffect, useState, useRef} from 'react';
+import {useEffect, useState, useRef, useMemo} from 'react';
 import './MarkdownEditor.css';
+import { createMentionSuggestion } from './mentionSuggestion';
+import type { MentionItem } from './MentionList';
 
 interface Props {
     content: string;
     onChange: (content: string) => void;
+    notes?: MentionItem[];           // Liste des notes pour les @mentions
+    onMentionClick?: (noteId: number) => void;  // Callback quand on clique sur une mention
 }
 
 // Stats : lignes, mots, caractères
@@ -31,7 +36,7 @@ interface ContextMenu {
 }
 
 // Éditeur WYSIWYG : **gras**, *italique*, # titre, - liste
-function MarkdownEditor({content, onChange}: Props) {
+function MarkdownEditor({content, onChange, notes = [], onMentionClick}: Props) {
 
     const [stats, setStats] = useState<Stats>({lines: 0, words: 0, chars: 0});
     const [locked, setLocked] = useState(false);
@@ -45,6 +50,9 @@ function MarkdownEditor({content, onChange}: Props) {
         const chars = text.replace(/\s/g, '').length;
         setStats({lines, words, chars});
     }
+
+    // Config des @mentions (mémorisée pour éviter les re-renders)
+    const mentionSuggestion = useMemo(() => createMentionSuggestion(notes), [notes]);
 
     const editor = useEditor({
 
@@ -73,9 +81,25 @@ function MarkdownEditor({content, onChange}: Props) {
                 autolink: true,
                 openOnClick: false,
             }),
-
+            // Extension @mention pour lier des notes
+            Mention.configure({
+                HTMLAttributes: {
+                    class: 'note-mention',
+                },
+                suggestion: mentionSuggestion,
+                renderHTML({ options, node }) {
+                    return [
+                        'span',
+                        {
+                            ...options.HTMLAttributes,
+                            'data-note-id': node.attrs.id,
+                        },
+                        `@${node.attrs.label ?? node.attrs.id}`,
+                    ];
+                },
+            }),
             Placeholder.configure({
-                placeholder: 'Écrivez ici... Utilisez la barre d\'outils pour formater',
+                placeholder: 'Écrivez ici... Tapez @ pour lier une note',
             }),
         ],
         content: content,
@@ -86,7 +110,7 @@ function MarkdownEditor({content, onChange}: Props) {
             updateStats(text);
         },
 
-    });
+    }, [mentionSuggestion]);
 
 
     // Synchronise le contenu quand on change de note
@@ -131,6 +155,17 @@ function MarkdownEditor({content, onChange}: Props) {
         document.addEventListener('click', handleClick);
         return () => document.removeEventListener('click', handleClick);
     }, []);
+
+    // Gère le clic sur une @mention
+    const handleEditorClick = (e: React.MouseEvent) => {
+        const target = e.target as HTMLElement;
+        if (target.classList.contains('note-mention') && onMentionClick) {
+            const noteId = target.getAttribute('data-note-id');
+            if (noteId) {
+                onMentionClick(parseInt(noteId, 10));
+            }
+        }
+    };
 
     // Actions du menu contextuel
     const insertTable = () => {
@@ -368,6 +403,7 @@ function MarkdownEditor({content, onChange}: Props) {
             <div
                 className={locked ? "editor-wrapper locked" : "editor-wrapper"}
                 onContextMenu={handleContextMenu}
+                onClick={handleEditorClick}
                 ref={editorRef}
             >
                 <EditorContent editor={editor}/>
