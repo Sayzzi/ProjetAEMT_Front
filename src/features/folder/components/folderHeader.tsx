@@ -9,7 +9,7 @@ interface InputData {
 }
 
 // Composant pour créer des dossiers et des notes
-export function FolderHeader({ onCreateFolder, onCreateNote, currentFolderId }) {
+export function FolderHeader({ onCreateFolder, onCreateNote, currentFolderId, rootFolderId }) {
 
     // État pour savoir quel input afficher (folder, note, ou aucun)
     const [openInput, setOpenInput] = useState<"folder" | "note" | null>(null);
@@ -25,15 +25,19 @@ export function FolderHeader({ onCreateFolder, onCreateNote, currentFolderId }) 
     function createFolder() {
         if (!inputData.folderTitle.trim()) return; // Ne pas créer si vide
 
-        if (user == null){//Ne pas creer si user n'est pas connecté
+        if (user == null) {
             alert("Utilisateur non connecté");
-            return
+            return;
         }
-        const command : CreateFolderCommand = {
-            userId : user.id,
-            parentFolderId : currentFolderId,
+
+        // Utilise le dossier sélectionné ou le dossier racine comme parent
+        const parentId = currentFolderId ?? rootFolderId;
+
+        const command: CreateFolderCommand = {
+            userId: user.id,
+            parentFolderId: parentId,
             title: inputData.folderTitle,
-        }
+        };
 
         //Envoi du command au parent
         onCreateFolder(command);
@@ -47,21 +51,23 @@ export function FolderHeader({ onCreateFolder, onCreateNote, currentFolderId }) 
     function createNote() {
         if (!inputData.noteTitle.trim()) return; // Ne pas créer si vide
 
-        if (currentFolderId === null) {
-            alert("Sélectionnez d'abord un dossier");
+        if (user == null) {
+            alert("Utilisateur non connecté");
             return;
         }
 
-        if (user == null){//Ne pas creer si user n'est pas connecté
-            alert("Utilisateur non connecté");
-            return
+        // Utilise le dossier sélectionné ou le dossier racine par défaut
+        const folderId = currentFolderId ?? rootFolderId;
+        if (!folderId) {
+            alert("Aucun dossier disponible");
+            return;
         }
 
-        const command : NoteCreateCommand  = {
-            idUser : user.id,
-            idFolder : currentFolderId,
-            title : inputData.noteTitle,
-            content : " "
+        const command: NoteCreateCommand = {
+            idUser: user.id,
+            idFolder: folderId,
+            title: inputData.noteTitle,
+            content: ""
         };
 
         //Envoi du command au parent
