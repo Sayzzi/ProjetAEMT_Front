@@ -25,22 +25,6 @@ export function LandingPage() {
                     <span className="float-item spider">🕷️</span>
                 </div>
             </div>
-
-            {/* Barre de navigation : logo + boutons connexion/inscription */}
-            <nav className="landing-nav">
-
-                <div className="nav-links">
-                    {user ? (
-                        <Link to="/" className="nav-btn primary">Mes Notes</Link>
-                    ) : (
-                        <>
-                            <Link to="/login" className="nav-btn ghost-btn">Connexion</Link>
-                            <Link to="/register" className="nav-btn primary">S'inscrire</Link>
-                        </>
-                    )}
-                </div>
-            </nav>
-
             {/* Section principale : titre accrocheur + aperçu de l'app */}
             <section className="hero">
                 <div className="hero-content">
