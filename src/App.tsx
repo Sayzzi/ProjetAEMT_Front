@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, Link } from "react-router-dom"
+import { BrowserRouter, Route, Routes } from "react-router-dom"
 import './App.css'
 
 // Composants de pages
@@ -16,41 +16,15 @@ import { ProtectedRoute } from "./features/auth/components/ProtectedRoute.tsx";
 function StatusBar() {
     const { user, logout } = useAuth();
 
-    return (
-        <div style={{
-            padding: '10px',
-            backgroundColor: '#333',
-            color: 'white',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-        }}>
-            <div>
-                {/* Affiche Accueil seulement si connecté */}
-                {user && (
-                    <Link to="/" style={{ color: 'white', marginRight: '15px' }}>Accueil</Link>
-                )}
-                {/* Affiche Connexion/Inscription seulement si pas connecté */}
-                {!user && (
-                    <>
-                        <Link to="/login" style={{ color: 'white', marginRight: '15px' }}>Connexion</Link>
-                        <Link to="/register" style={{ color: 'white' }}>Inscription</Link>
-                    </>
-                )}
-            </div>
+    // Affiche seulement si connecté
+    if (!user) return null;
 
-            <div>
-                {user ? (
-                    <>
-                        <span style={{ marginRight: '15px' }}>
-                            Connecté: {user.userName}
-                        </span>
-                        <button onClick={logout}>Déconnexion</button>
-                    </>
-                ) : (
-                    <span>Non connecté</span>
-                )}
+    return (
+        <div className="status-bar">
+            <div className="user-info">
+                <span className="user-name">{user.userName}</span>
             </div>
+            <button onClick={logout} className="logout-btn">Déconnexion</button>
         </div>
     );
 }

@@ -16,22 +16,6 @@
   position: relative;
 }
 
-/* Araignée qui se balance */
-.sidebar::before {
-  content: '🕷️';
-  position: absolute;
-  top: 55px;
-  right: 12px;
-  font-size: 14px;
-  opacity: 0.3;
-  animation: spider 3s ease-in-out infinite;
-}
-
-@keyframes spider {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(8px) rotate(3deg); }
-}
-
 /* Titre sidebar */
 .sidebar h2 {
   padding: 0 0 14px 0;

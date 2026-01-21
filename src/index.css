@@ -46,25 +46,6 @@ body::before {
   z-index: -1;
 }
 
-/* Chauve-souris animée */
-body::after {
-  content: '🦇';
-  position: fixed;
-  top: 8%;
-  right: 4%;
-  font-size: 22px;
-  opacity: 0.25;
-  animation: bat 10s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes bat {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  25% { transform: translate(-80px, 25px) rotate(-8deg); }
-  50% { transform: translate(-40px, -15px) rotate(5deg); }
-  75% { transform: translate(-120px, 10px) rotate(-5deg); }
-}
-
 /* Titres en orange citrouille */
 h1, h2, h3 {
   color: var(--pumpkin);
@@ -139,17 +120,6 @@ form {
   border: 1px solid var(--fog);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   position: relative;
-}
-
-/* Toile d'araignée sur les forms */
-form::before {
-  content: '🕸️';
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  font-size: 36px;
-  opacity: 0.4;
-  transform: rotate(45deg);
 }
 
 /* Titre form en Creepster */
