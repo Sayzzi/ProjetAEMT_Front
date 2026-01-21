@@ -1,9 +1,18 @@
 import type {FolderNode} from "../../types/folderNode.ts";
 import type {FolderDto} from "../../types/dto/folderDto.ts";
 import type {NoteDto} from "../../types/dto/noteDto.ts";
+import type Note from "../../types/note.ts";
+
+// Résultat du build : arbre + notes orphelines (dans le dossier racine invisible)
+export interface BuildTreeResult {
+    tree: FolderNode[];
+    rootNotes: Note[];  // Notes dans le dossier racine
+    rootFolderId: number | null;
+}
 
 // Transforme une liste plate de dossiers et notes en arbre hiérarchique
-export function buildFolderTree(folders: FolderDto[], notes: NoteDto[] = []): FolderNode[] {
+// Le dossier racine (invisible) n'est pas affiché, seuls ses enfants le sont
+export function buildFolderTree(folders: FolderDto[], notes: NoteDto[] = []): BuildTreeResult {
     // Map pour accéder rapidement à un dossier par son ID
     const folderMap = new Map<number, FolderNode>();
 
@@ -22,12 +31,12 @@ export function buildFolderTree(folders: FolderDto[], notes: NoteDto[] = []): Fo
     });
 
     // Étape 3 : Construire la hiérarchie parent/enfant
-    const roots: FolderNode[] = []; // Dossiers racines (sans parent)
+    let rootFolder: FolderNode | null = null;
 
     folderMap.forEach(node => {
         if (node.id_parent_folder === null) {
-            // Pas de parent = dossier racine
-            roots.push(node);
+            // Dossier racine invisible
+            rootFolder = node;
         } else {
             // A un parent = on l'ajoute comme enfant du parent
             const parent = folderMap.get(node.id_parent_folder);
@@ -35,5 +44,14 @@ export function buildFolderTree(folders: FolderDto[], notes: NoteDto[] = []): Fo
         }
     });
 
-    return roots;
+    // Retourne les enfants du dossier racine + les notes du dossier racine
+    if (rootFolder) {
+        return {
+            tree: rootFolder.children,
+            rootNotes: rootFolder.notes,
+            rootFolderId: rootFolder.id
+        };
+    }
+
+    return { tree: [], rootNotes: [], rootFolderId: null };
 }

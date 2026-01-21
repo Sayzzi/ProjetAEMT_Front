@@ -1,5 +1,5 @@
 export interface CreateFolderCommand {
-    userId : number | null;
-    title : string;
-    parentFolderId : number;
+    userId: number;
+    title: string;
+    parentFolderId: number | null;
 }

@@ -155,6 +155,8 @@ export function LoginFormComponent() {
             {/* Lien vers la page d'inscription */}
             <p style={{ marginTop: '15px', textAlign: 'center' }}>
                 Pas encore de compte ? <Link to="/register">Créer un compte</Link>
+                <br/>
+                Retour à l'<Link to="/welcome">Accueil</Link>
             </p>
         </form>
     );

@@ -10,6 +10,7 @@ import MarkdownEditor from "./MarkdownEditor.tsx";
 import ExportPdfButton from "./exportPdfButton.tsx";
 import ExportZipButton from "./exportZipButton.tsx";
 import {QuickSearch} from "../../search/components/QuickSearch.tsx";
+import {NoteItem} from "./NoteItem.tsx";
 import "./folderList.css";
 import {FolderService} from "../services/folderService.tsx";
 import {useAuth} from "../../auth/contexts/AuthContext.tsx";
@@ -24,6 +25,7 @@ const noteService = new NoteService();
 export function FolderList() {
     // États React : quand ça change, le composant se re-render
     const [tree, setTree] = useState<FolderNode[]>([]);              // Arbre des dossiers
+    const [rootNotes, setRootNotes] = useState<Note[]>([]);          // Notes du dossier racine
     const [currentFolderId, setCurrentFolderId] = useState<number | null>(null);  // Dossier sélectionné
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);  // Note ouverte
     const [editingTitle, setEditingTitle] = useState(false);         // Mode édition titre
@@ -31,6 +33,8 @@ export function FolderList() {
     const [contentValue, setContentValue] = useState("");            // Contenu de la note
     const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");  // Statut sauvegarde
     const [sidebarOpen, setSidebarOpen] = useState(true);           // Sidebar ouverte/fermée
+    const [showShortcuts, setShowShortcuts] = useState(false);     // Modal aide raccourcis
+    const [rootFolderId, setRootFolderId] = useState<number | null>(null);  // ID du dossier racine
     const {user} = useAuth();  // User connecté (contient id, userName, token JWT)
 
     // useRef pour le debounce : garde la valeur entre les renders
@@ -43,12 +47,76 @@ export function FolderList() {
         }
     }, [user]);
 
+    // Raccourcis clavier globaux
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Ignore si on tape dans un input/textarea
+            const target = e.target as HTMLElement;
+            const isEditing = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+
+            // Cmd/Ctrl + : : Aide raccourcis (fonctionne partout)
+            const isMod = e.ctrlKey || e.metaKey; // Ctrl sur Windows/Linux, Cmd sur Mac
+
+            if (isMod && (e.key === ':' || e.key === '/')) {
+                e.preventDefault();
+                setShowShortcuts(prev => !prev);
+                return;
+            }
+
+            // Escape : Ferme le modal
+            if (e.key === 'Escape' && showShortcuts) {
+                setShowShortcuts(false);
+                return;
+            }
+
+            // Les raccourcis suivants ne fonctionnent pas si on édite du texte
+            if (isEditing) return;
+
+            // Cmd/Ctrl + E : Toggle sidebar
+            if (isMod && e.key === 'e') {
+                e.preventDefault();
+                setSidebarOpen(prev => !prev);
+                return;
+            }
+
+            // Cmd/Ctrl + P : Export PDF (si une note est sélectionnée)
+            if (isMod && e.key === 'p') {
+                e.preventDefault();
+                if (selectedNote?.id) {
+                    window.open(`http://localhost:8080/api/notes/${selectedNote.id}/export-pdf`, '_blank');
+                }
+                return;
+            }
+
+            // Cmd/Ctrl + N : Nouvelle note
+            if (isMod && e.key === 'n') {
+                e.preventDefault();
+                const folderId = currentFolderId ?? rootFolderId;
+                if (user && folderId) {
+                    handleCreateNote({
+                        idUser: user.id,
+                        idFolder: folderId,
+                        title: 'Nouvelle note',
+                        content: ''
+                    });
+                }
+                return;
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [showShortcuts, selectedNote?.id, currentFolderId, rootFolderId, user]);
+
     // Recharge l'arbre depuis le backend
     async function refreshTree() {
         if (!user) return;
         const { folders, notes } = await folderService.getAllFoldersAndNotesByUser(user.id);
-        const tree = buildFolderTree(folders, notes);
+
+        const { tree, rootNotes, rootFolderId } = buildFolderTree(folders, notes);
         setTree(tree);
+        setRootNotes(rootNotes);
+        setRootFolderId(rootFolderId);
     }
 
     // Crée un nouveau dossier
@@ -120,6 +188,7 @@ export function FolderList() {
 
     // Met à jour une note dans l'arbre local (évite de recharger tout l'arbre)
     function updateNoteInTree(noteId: number, updates: Partial<Note>) {
+        // Met à jour dans l'arbre des dossiers
         setTree(prevTree => {
             const updateInNodes = (nodes: FolderNode[]): FolderNode[] => {
                 return nodes.map(folder => ({
@@ -132,6 +201,13 @@ export function FolderList() {
             };
             return updateInNodes(prevTree);
         });
+
+        // Met à jour dans les notes racine
+        setRootNotes(prevNotes =>
+            prevNotes.map(note =>
+                note.id === noteId ? { ...note, ...updates } : note
+            )
+        );
     }
 
     // Sauvegarde le contenu (appelé après 1s sans frappe = debounce)
@@ -219,8 +295,8 @@ export function FolderList() {
     function handleQuickOpenNote(noteId: number, folderId?: number | null) {
         // Sélectionne le dossier parent si fourni
         if (folderId) setCurrentFolderId(folderId);
-        // Cherche la note dans l'arbre et la sélectionne
-        const note = findNoteInTree(tree, noteId);
+        // Cherche la note dans l'arbre ou les notes racine
+        const note = findNoteInTree(tree, noteId) || rootNotes.find(n => n.id === noteId);
         if (note) {
             handleSelectNote(note);
         }
@@ -235,7 +311,7 @@ export function FolderList() {
                 if (folder.notes) {
                     result = result.concat(
                         folder.notes
-                            .filter(n => n.id !== selectedNote?.id) // Exclut la note courante
+                            .filter(n => n.id !== selectedNote?.id)
                             .map(n => ({ id: n.id!, title: n.title || 'Sans titre' }))
                     );
                 }
@@ -245,12 +321,19 @@ export function FolderList() {
             }
             return result;
         };
-        return collectNotes(tree);
-    }, [tree, selectedNote?.id]);
+
+        // Notes des dossiers + notes racine
+        const treeNotes = collectNotes(tree);
+        const rootNotesItems = rootNotes
+            .filter(n => n.id !== selectedNote?.id)
+            .map(n => ({ id: n.id!, title: n.title || 'Sans titre' }));
+
+        return [...rootNotesItems, ...treeNotes];
+    }, [tree, rootNotes, selectedNote?.id]);
 
     // Callback @mention : ouvre la note liée
     function handleMentionClick(noteId: number) {
-        const note = findNoteInTree(tree, noteId);
+        const note = findNoteInTree(tree, noteId) || rootNotes.find(n => n.id === noteId);
         if (note) {
             handleSelectNote(note);
         }
@@ -283,10 +366,27 @@ export function FolderList() {
                             onCreateFolder={handleCreateFolder}
                             onCreateNote={handleCreateNote}
                             currentFolderId={currentFolderId}
+                            rootFolderId={rootFolderId}
                         />
 
                         {/* Arbre des dossiers et notes */}
                         <div className="sidebar-content">
+                            {/* Notes du dossier racine (sans dossier) */}
+                            {rootNotes.length > 0 && (
+                                <ul className="root-notes-section">
+                                    {rootNotes.map(note => (
+                                        <NoteItem
+                                            key={note.id}
+                                            note={note}
+                                            isSelected={selectedNote?.id === note.id}
+                                            onSelect={handleSelectNote}
+                                            onDelete={handleDeleteNote}
+                                            depth={0}
+                                        />
+                                    ))}
+                                </ul>
+                            )}
+
                             <FolderTreeComponent
                                 nodes={tree}
                                 onSelectFolder={setCurrentFolderId}
@@ -432,6 +532,72 @@ export function FolderList() {
                 onOpenFolder={handleQuickOpenFolder}
                 onOpenNote={handleQuickOpenNote}
             />
+
+            {/* Modal aide raccourcis */}
+            {showShortcuts && (
+                <div className="shortcuts-overlay" onClick={() => setShowShortcuts(false)}>
+                    <div className="shortcuts-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="shortcuts-header">
+                            <h2>Raccourcis clavier</h2>
+                            <button className="shortcuts-close" onClick={() => setShowShortcuts(false)}>×</button>
+                        </div>
+                        <div className="shortcuts-content">
+                            <div className="shortcuts-section">
+                                <h3>Navigation</h3>
+                                <div className="shortcut-item">
+                                    <span className="shortcut-keys"><kbd>Shift</kbd> <kbd>Shift</kbd></span>
+                                    <span className="shortcut-desc">Recherche rapide</span>
+                                </div>
+                                <div className="shortcut-item">
+                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>E</kbd></span>
+                                    <span className="shortcut-desc">Toggle sidebar</span>
+                                </div>
+                                <div className="shortcut-item">
+                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>:</kbd></span>
+                                    <span className="shortcut-desc">Aide raccourcis</span>
+                                </div>
+                            </div>
+                            <div className="shortcuts-section">
+                                <h3>Notes</h3>
+                                <div className="shortcut-item">
+                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>N</kbd></span>
+                                    <span className="shortcut-desc">Nouvelle note</span>
+                                </div>
+                                <div className="shortcut-item">
+                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>P</kbd></span>
+                                    <span className="shortcut-desc">Exporter en PDF</span>
+                                </div>
+                                <div className="shortcut-item">
+                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>Z</kbd></span>
+                                    <span className="shortcut-desc">Annuler</span>
+                                </div>
+                            </div>
+                            <div className="shortcuts-section">
+                                <h3>Formatage</h3>
+                                <div className="shortcut-item">
+                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>B</kbd></span>
+                                    <span className="shortcut-desc">Gras</span>
+                                </div>
+                                <div className="shortcut-item">
+                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>I</kbd></span>
+                                    <span className="shortcut-desc">Italique</span>
+                                </div>
+                                <div className="shortcut-item">
+                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>U</kbd></span>
+                                    <span className="shortcut-desc">Souligné</span>
+                                </div>
+                            </div>
+                            <div className="shortcuts-section">
+                                <h3>Mentions</h3>
+                                <div className="shortcut-item">
+                                    <span className="shortcut-keys"><kbd>@</kbd></span>
+                                    <span className="shortcut-desc">Lier une note</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

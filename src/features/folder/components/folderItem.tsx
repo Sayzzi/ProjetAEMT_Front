@@ -1,6 +1,7 @@
 // Composant qui affiche UN dossier + ses sous-dossiers + ses notes
 import {useState, useEffect} from "react";
 import {FolderTreeComponent} from "./folderTreeComponent.tsx";
+import {NoteItem} from "./NoteItem.tsx";
 import type Note from "../../types/note.ts";
 import "./folderTreeComponent.css";
 
@@ -27,9 +28,6 @@ export function FolderItem({
     // Position du menu clic droit sur dossier
     const [contextMenu, setContextMenu] = useState(null);
 
-    // Position du menu clic droit sur note
-    const [noteContextMenu, setNoteContextMenu] = useState<{x: number, y: number, noteId: number} | null>(null);
-
     // true si ce dossier est sélectionné
     const isSelected = currentFolderId === node.id;
 
@@ -48,12 +46,9 @@ export function FolderItem({
         setIsEditing(false);
     }
 
-    // Ferme les menus contextuels quand on clique ailleurs
+    // Ferme le menu contextuel quand on clique ailleurs
     useEffect(() => {
-        const close = () => {
-            setContextMenu(null);
-            setNoteContextMenu(null);
-        };
+        const close = () => setContextMenu(null);
         window.addEventListener("click", close);
         return () => window.removeEventListener("click", close);
     }, []);
@@ -111,24 +106,6 @@ export function FolderItem({
                 </div>
             )}
 
-            {/* Menu clic droit sur note */}
-            {noteContextMenu && (
-                <div
-                    className="context-menu"
-                    style={{ top: noteContextMenu.y, left: noteContextMenu.x }}
-                >
-                    <div
-                        className="context-menu-item"
-                        onClick={() => {
-                            onDeleteNote?.(noteContextMenu.noteId);
-                            setNoteContextMenu(null);
-                        }}
-                    >
-                        Supprimer
-                    </div>
-                </div>
-            )}
-
             {/* Contenu du dossier (si ouvert) */}
             {open && (
                 <>
@@ -151,19 +128,14 @@ export function FolderItem({
                     {node.notes && node.notes.length > 0 && (
                         <ul>
                             {node.notes.map((note: Note) => (
-                                <li
+                                <NoteItem
                                     key={note.id}
-                                    className={`note-item ${selectedNoteId === note.id ? "selected" : ""}`}
-                                    style={{ paddingLeft: `${10 + (depth + 1) * 16}px` }}
-                                    onClick={() => onSelectNote?.(note)}
-                                    onContextMenu={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();  // Empêche le menu du dossier
-                                        setNoteContextMenu({ x: e.clientX, y: e.clientY, noteId: note.id! });
-                                    }}
-                                >
-                                    {note.title}
-                                </li>
+                                    note={note}
+                                    isSelected={selectedNoteId === note.id}
+                                    onSelect={(n) => onSelectNote?.(n)}
+                                    onDelete={(id) => onDeleteNote?.(id)}
+                                    depth={depth + 1}
+                                />
                             ))}
                         </ul>
                     )}

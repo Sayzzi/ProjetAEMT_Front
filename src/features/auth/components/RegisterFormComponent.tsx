@@ -137,6 +137,8 @@ export function RegisterFormComponent() {
 
                 <p className="register-footer">
                     Deja un compte ? <Link to="/login">Se connecter</Link>
+                    <br/>
+                    Retour à l'<Link to="/welcome">Accueil</Link>
                 </p>
             </form>
         </div>

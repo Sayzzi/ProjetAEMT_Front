@@ -373,3 +373,135 @@
     justify-content: center;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   SHORTCUTS MODAL
+   ═══════════════════════════════════════════════════════════════ */
+.shortcuts-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.shortcuts-modal {
+  background: var(--grave);
+  border: 1px solid var(--fog);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.shortcuts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--fog);
+  background: var(--tombstone);
+}
+
+.shortcuts-header h2 {
+  font-family: 'Creepster', cursive;
+  font-size: 1.5rem;
+  color: var(--pumpkin);
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.shortcuts-close {
+  background: transparent;
+  border: none;
+  color: var(--mist);
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.shortcuts-close:hover {
+  color: var(--pumpkin);
+}
+
+.shortcuts-content {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: calc(80vh - 80px);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.shortcuts-section h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--pumpkin);
+  margin: 0 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--fog);
+}
+
+.shortcut-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  gap: 16px;
+}
+
+.shortcut-keys {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.shortcut-keys kbd {
+  display: inline-block;
+  padding: 4px 8px;
+  background: var(--tombstone);
+  border: 1px solid var(--fog);
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: var(--ghost);
+  box-shadow: 0 2px 0 var(--fog);
+}
+
+.shortcut-desc {
+  color: var(--bone);
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+@media (max-width: 600px) {
+  .shortcuts-content {
+    grid-template-columns: 1fr;
+  }
+}

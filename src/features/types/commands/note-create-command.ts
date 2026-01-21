@@ -1,8 +1,6 @@
 export interface NoteCreateCommand {
-
-    idUser: number,
-    idFolder: number,
-    title: string,
-    content: string
-
+    idUser: number;
+    idFolder: number | null;
+    title: string;
+    content: string;
 }
