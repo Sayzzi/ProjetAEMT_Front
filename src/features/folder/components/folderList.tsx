@@ -13,6 +13,7 @@ import {useAuth} from "../../auth/contexts/AuthContext.tsx";
 import type {UpdateFolderCommand} from "../../types/commands/updateFolderCommand.ts";
 import {NoteService} from "../../note/service/note-service.tsx";
 import type {NoteUpdateCommand} from "../../types/commands/noteUpdateCommand.ts";
+import {QuickSearch} from "../../search/components/QuickSearch.tsx";
 
 // Services pour communiquer avec le backend
 const folderService = new FolderService();
@@ -173,8 +174,44 @@ export function FolderList() {
         await refreshTree();
     }
 
+    // Recherche une note dans l'arbre à partir de son ID
+    function findNoteInTree(noteId: number): { note: Note, folderId: number } | null {
+        const stack: FolderNode[] = [...tree];
+        while (stack.length) {
+            const node = stack.pop()!;
+            if (node.notes) {
+                const match = node.notes.find(n => n.id === noteId);
+                if (match) {
+                    return { note: match, folderId: node.id };
+                }
+            }
+            if (node.children && node.children.length) {
+                stack.push(...node.children);
+            }
+        }
+        return null;
+    }
+
+    // Ouvre un élément depuis la recherche rapide
+    function openFromSearch(noteId: number, folderId?: number | null) {
+        if (folderId) {
+            setCurrentFolderId(folderId);
+        }
+        const found = findNoteInTree(noteId);
+        if (found) {
+            handleSelectNote(found.note);
+            return;
+        }
+        alert("Note introuvable dans l'arborescence");
+    }
+
     return (
         <div className="app-layout">
+            <QuickSearch
+                userId={user?.id}
+                onOpenFolder={setCurrentFolderId}
+                onOpenNote={openFromSearch}
+            />
             {/* Sidebar gauche : liste des dossiers */}
             <aside className="sidebar">
                 <h2>Mes dossiers</h2>
