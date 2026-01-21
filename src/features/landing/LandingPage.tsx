@@ -28,10 +28,7 @@ export function LandingPage() {
 
             {/* Barre de navigation : logo + boutons connexion/inscription */}
             <nav className="landing-nav">
-                <div className="nav-logo">
-                    <span className="logo-icon">🎃</span>
-                    <span className="logo-text">Spooky Notes</span>
-                </div>
+
                 <div className="nav-links">
                     {user ? (
                         <Link to="/" className="nav-btn primary">Mes Notes</Link>
