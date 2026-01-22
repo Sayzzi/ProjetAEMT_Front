@@ -1,4 +1,4 @@
-/* Conteneur des alertes - fixé en haut à droite */
+/* Alert container - fixed at the top right */
 .alert-container {
     position: fixed;
     top: 20px;
@@ -10,7 +10,7 @@
     max-width: 400px;
 }
 
-/* Style de base d'une alerte */
+/* Base style for an alert */
 .alert {
     display: flex;
     align-items: flex-start;
@@ -34,7 +34,7 @@
     }
 }
 
-/* Icône de l'alerte */
+/* Alert icon */
 .alert-icon {
     width: 24px;
     height: 24px;
@@ -47,7 +47,7 @@
     flex-shrink: 0;
 }
 
-/* Contenu de l'alerte */
+/* Alert content */
 .alert-content {
     flex: 1;
     min-width: 0;
@@ -65,7 +65,7 @@
     word-wrap: break-word;
 }
 
-/* Bouton fermer */
+/* Close button */
 .alert-close {
     background: none;
     border: none;
@@ -82,9 +82,9 @@
     opacity: 1;
 }
 
-/* === TYPES D'ALERTES === */
+/* === ALERT TYPES === */
 
-/* Erreur - Rouge */
+/* Error - Red */
 .alert-error {
     border-color: #ff4757;
     background: linear-gradient(135deg, #2d1f2f 0%, #1a1a2e 100%);
@@ -103,7 +103,7 @@
     color: #ffb3ba;
 }
 
-/* Succès - Vert */
+/* Success - Green */
 .alert-success {
     border-color: #2ed573;
     background: linear-gradient(135deg, #1f2d2a 0%, #1a1a2e 100%);
@@ -141,7 +141,7 @@
     color: #ffe0a3;
 }
 
-/* Info - Bleu */
+/* Info - Blue */
 .alert-info {
     border-color: #3742fa;
     background: linear-gradient(135deg, #1f2a2d 0%, #1a1a2e 100%);

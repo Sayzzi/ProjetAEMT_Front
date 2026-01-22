@@ -1,9 +1,9 @@
-// Service pour exporter un dossier en ZIP
-import {fetchWithAuth} from "../../auth/services/api.ts";
+// Service to export a folder as ZIP
+import { fetchWithAuth } from "../../auth/services/api.ts";
 
 export default function ExportZipService() {
 
-    // GET /folders/:id/export-zip - Télécharge le ZIP du dossier
+    // GET /folders/:id/export-zip - Download the folder ZIP
     const exportFolderToZip = async (folderId: number): Promise<void> => {
 
         const response = await fetchWithAuth(
@@ -17,13 +17,13 @@ export default function ExportZipService() {
         );
 
         if (!response.ok) {
-            throw new Error("Erreur lors de l'export ZIP");
+            throw new Error("Error during ZIP export");
         }
 
-        // Récupère le blob (fichier binaire)
+        // Retrieve the blob (binary file)
         const blob = await response.blob();
 
-        // Nom du fichier depuis le header si possible
+        // Get the filename from the header if possible
         const contentDisposition = response.headers.get("content-disposition");
         let filename = `folder_${folderId}.zip`;
 
@@ -34,7 +34,7 @@ export default function ExportZipService() {
             }
         }
 
-        // Crée un lien invisible et déclenche le téléchargement
+        // Create an invisible link and trigger the download
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
@@ -42,7 +42,7 @@ export default function ExportZipService() {
         document.body.appendChild(link);
         link.click();
 
-        // Nettoie
+        // Clean up
         link.remove();
         window.URL.revokeObjectURL(url);
     };

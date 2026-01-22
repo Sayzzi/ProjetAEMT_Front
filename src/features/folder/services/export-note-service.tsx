@@ -1,9 +1,9 @@
-// Service pour exporter une note en PDF
-import {fetchWithAuth} from "../../auth/services/api.ts";
+// Service to export a note as PDF
+import { fetchWithAuth } from "../../auth/services/api.ts";
 
 export default function ExportNoteService() {
 
-    // GET /notes/:id/export-pdf - Télécharge le PDF
+    // GET /notes/:id/export-pdf - Download the PDF
     const exportNoteToPdf = async (noteId: number): Promise<void> => {
 
         const response = await fetchWithAuth(
@@ -17,13 +17,13 @@ export default function ExportNoteService() {
         );
 
         if (!response.ok) {
-            throw new Error("Erreur lors de l'export PDF");
+            throw new Error("Error during PDF export");
         }
 
-        // Récupère le blob (fichier binaire)
+        // Retrieve the blob (binary file)
         const blob = await response.blob();
 
-        // Nom du fichier depuis le header si possible
+        // Get the filename from the header if possible
         const contentDisposition = response.headers.get("content-disposition");
         let filename = `note_${noteId}.pdf`;
 
@@ -34,7 +34,7 @@ export default function ExportNoteService() {
             }
         }
 
-        // Crée un lien invisible et déclenche le téléchargement
+        // Create an invisible link and trigger the download
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
@@ -42,7 +42,7 @@ export default function ExportNoteService() {
         document.body.appendChild(link);
         link.click();
 
-        // Nettoie
+        // Clean up
         link.remove();
         window.URL.revokeObjectURL(url);
     };

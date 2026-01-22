@@ -1,20 +1,20 @@
-// Composant qui protège une route : redirige vers /login si pas connecté
+// Component that protects a route: redirects to /login if not authenticated
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.tsx";
 import type { ReactNode } from "react";
 
 interface Props {
-    children: ReactNode;  // Le composant à afficher si connecté
+    children: ReactNode;  // The component to display if authenticated
 }
 
 export function ProtectedRoute({ children }: Props) {
     const { user } = useAuth();
 
-    // Si pas connecté, redirige vers la page de welcome
+    // If not authenticated, redirect to the welcome page
     if (!user) {
         return <Navigate to="/welcome" replace />;
     }
 
-    // Sinon, affiche le composant enfant
+    // Otherwise, render the child component
     return <>{children}</>;
 }

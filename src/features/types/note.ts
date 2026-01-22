@@ -1,14 +1,14 @@
-// Type d'une note (correspond à l'entité backend)
+// Type of a note (corresponds to the backend entity)
 export default interface Note {
-    id?: number,           // ID unique
-    id_user: number,       // ID du propriétaire
-    id_folder: number,     // ID du dossier parent
-    title?: string | null, // Titre de la note
-    content?: string | null, // Contenu HTML (TipTap)
-    createdAt?: string,    // Date de création (ISO string)
-    updatedAt?: string,    // Date de dernière modif
-    sizeBytes?: number,    // Taille en octets
-    lineCount?: number,    // Nombre de lignes
-    wordCount?: number,    // Nombre de mots
-    charCount?: number     // Nombre de caractères
+    id?: number,             // Unique ID
+    id_user: number,         // Owner's ID
+    id_folder: number,       // Parent folder ID
+    title?: string | null,   // Note title
+    content?: string | null, // HTML content (TipTap)
+    createdAt?: string,      // Creation date (ISO string)
+    updatedAt?: string,      // Last modification date
+    sizeBytes?: number,      // Size in bytes
+    lineCount?: number,      // Number of lines
+    wordCount?: number,      // Number of words
+    charCount?: number       // Number of characters
 }

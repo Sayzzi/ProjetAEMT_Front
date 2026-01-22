@@ -1,4 +1,3 @@
-// Types des résultats de la recherche rapide
 export interface SearchResultItem {
     type: "FOLDER" | "NOTE" | "NOTE_CONTENT" | string;
     id: number;

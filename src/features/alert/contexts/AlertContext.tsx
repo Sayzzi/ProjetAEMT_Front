@@ -1,10 +1,9 @@
-// Contexte pour gérer les alertes globales (erreurs API, succès, etc.)
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 
-// Types d'alertes
+// Alert Types
 export type AlertType = 'error' | 'success' | 'warning' | 'info';
 
-// Structure d'une alerte
+// Struct Alert
 export interface Alert {
     id: number;
     type: AlertType;
@@ -12,7 +11,7 @@ export interface Alert {
     message: string;
 }
 
-// Interface du contexte
+// Context interface
 interface AlertContextType {
     alerts: Alert[];
     showAlert: (type: AlertType, title: string, message: string) => void;
@@ -23,7 +22,6 @@ interface AlertContextType {
 
 const AlertContext = createContext<AlertContextType | null>(null);
 
-// Hook pour utiliser le contexte
 export function useAlert() {
     const context = useContext(AlertContext);
     if (!context) {
@@ -32,7 +30,6 @@ export function useAlert() {
     return context;
 }
 
-// Variable globale pour accéder aux alertes depuis api.ts (hors composant React)
 let globalShowError: ((title: string, message: string) => void) | null = null;
 
 export function getGlobalShowError() {
@@ -44,20 +41,20 @@ export function AlertProvider({ children }: { children: ReactNode }) {
     const [alerts, setAlerts] = useState<Alert[]>([]);
     const [nextId, setNextId] = useState(1);
 
-    // Ajoute une alerte
+    // Add an alert
     const showAlert = useCallback((type: AlertType, title: string, message: string) => {
         const id = nextId;
         setNextId(prev => prev + 1);
 
         setAlerts(prev => [...prev, { id, type, title, message }]);
 
-        // Auto-suppression après 5 secondes
+        // Auto-suppress after 5 sec
         setTimeout(() => {
             removeAlert(id);
         }, 5000);
     }, [nextId]);
 
-    // Raccourcis
+    // Shortcuts
     const showError = useCallback((title: string, message: string) => {
         showAlert('error', title, message);
     }, [showAlert]);
@@ -66,12 +63,12 @@ export function AlertProvider({ children }: { children: ReactNode }) {
         showAlert('success', title, message);
     }, [showAlert]);
 
-    // Supprime une alerte
+    // Delete alert
     const removeAlert = useCallback((id: number) => {
         setAlerts(prev => prev.filter(alert => alert.id !== id));
     }, []);
 
-    // Expose showError globalement pour api.ts
+    // Expose showError
     globalShowError = showError;
 
     return (

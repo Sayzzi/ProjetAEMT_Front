@@ -1,4 +1,4 @@
-// Classe pour gérer les erreurs API
+// Handle exceptions and errors
 
 export class ApiError extends Error {
     public status: number;

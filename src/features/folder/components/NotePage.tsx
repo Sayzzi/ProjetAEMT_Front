@@ -14,7 +14,7 @@ export default function NotePage() {
     return (
         <div className="note-page">
 
-            {/* BARRE D’ACTIONS */}
+            {/* Action bar */}
             <div className="note-toolbar">
                 <ExportPdfButton
                     noteId={noteId}
@@ -22,7 +22,7 @@ export default function NotePage() {
                 />
             </div>
 
-            {/* EDITEUR */}
+            {/* Editor */}
             <MarkdownEditor
                 content={content}
                 onChange={(html) => {

@@ -1,9 +1,9 @@
-// Fonction pour faire des requêtes avec le token JWT
+// Function to make requests with the JWT token
 import { getGlobalShowError } from '../../alert/contexts/AlertContext';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-// Structure ProblemDetail du backend (RFC 7807)
+// Backend ProblemDetail structure (RFC 7807)
 interface ProblemDetail {
     type?: string;
     title?: string;
@@ -11,33 +11,33 @@ interface ProblemDetail {
     detail?: string;
 }
 
-// Map des codes HTTP vers des titres lisibles
+// Map of HTTP codes to readable titles
 const HTTP_ERROR_TITLES: Record<number, string> = {
-    400: 'Requête invalide',
-    401: 'Non autorisé',
-    403: 'Accès refusé',
-    404: 'Non trouvé',
-    409: 'Conflit',
-    500: 'Erreur serveur',
+    400: 'Invalid request',
+    401: 'Unauthorized',
+    403: 'Access denied',
+    404: 'Not found',
+    409: 'Conflict',
+    500: 'Server error',
 };
 
-// Récupère le token depuis localStorage
+// Retrieve the token from localStorage
 function getToken(): string | null {
     const user = localStorage.getItem('user');
     if (!user) return null;
     return JSON.parse(user).token;
 }
 
-// Affiche une erreur via le système d'alertes
+// Display an error using the alert system
 function showApiError(status: number, detail: string) {
     const showError = getGlobalShowError();
     if (showError) {
-        const title = HTTP_ERROR_TITLES[status] || `Erreur ${status}`;
-        showError(title, detail || 'Une erreur est survenue');
+        const title = HTTP_ERROR_TITLES[status] || `Error ${status}`;
+        showError(title, detail || 'An error occurred');
     }
 }
 
-// Fetch avec token JWT automatique + gestion des erreurs
+// Fetch with automatic JWT token + error handling
 export async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response> {
     const token = getToken();
 
@@ -46,7 +46,7 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
         ...options.headers,
     };
 
-    // Ajoute le token si présent
+    // Add the token if present
     if (token) {
         (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
     }
@@ -56,13 +56,13 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
         headers,
     });
 
-    // Si erreur HTTP, parse le ProblemDetail et affiche l'alerte
+    // If HTTP error, parse ProblemDetail and display the alert
     if (!response.ok) {
         try {
             const errorData: ProblemDetail = await response.clone().json();
-            showApiError(response.status, errorData.detail || errorData.title || 'Erreur inconnue');
+            showApiError(response.status, errorData.detail || errorData.title || 'Unknown error');
         } catch {
-            // Si le body n'est pas du JSON, utilise le statusText
+            // If the body is not JSON, use statusText
             showApiError(response.status, response.statusText);
         }
     }
@@ -70,7 +70,7 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
     return response;
 }
 
-// Raccourcis pour les méthodes HTTP
+// Shortcuts for HTTP methods
 export const api = {
     get: (endpoint: string) => fetchWithAuth(endpoint, { method: 'GET' }),
 

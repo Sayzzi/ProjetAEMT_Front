@@ -1,48 +1,48 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import './App.css'
 
-// Composants de pages
+// Page components
 import { LoginFormComponent } from "./features/auth/components/LoginFormComponent.tsx";
 import { RegisterFormComponent } from "./features/auth/components/RegisterFormComponent.tsx";
 import { FolderList } from "./features/folder/components/folderList.tsx";
 import { LandingPage } from "./features/landing/LandingPage.tsx";
 
-// Contexte d'authentification + protection des routes
+// Authentication context + route protection
 import { AuthProvider, useAuth } from "./features/auth/contexts/AuthContext.tsx";
 import { ProtectedRoute } from "./features/auth/components/ProtectedRoute.tsx";
 
-// Système d'alertes globales
+// Global alert system
 import { AlertProvider } from "./features/alert/contexts/AlertContext.tsx";
 import { AlertContainer } from "./features/alert/components/AlertContainer.tsx";
 
 // ============================================
-// BARRE DE STATUT - Header avec logo + infos user
-// Visible uniquement quand connecté
+// STATUS BAR - Header with logo + user info
+// Visible only when logged in
 // ============================================
 function StatusBar() {
     const { user, logout } = useAuth();
 
-    // Cache le header sur les pages publiques (login, register, landing)
+    // Hide header on public pages (login, register, landing)
     if (!user) return null;
 
     return (
         <header className="status-bar">
-            {/* Logo cliquable pour retour à l'accueil */}
+            {/* Clickable logo to return to home */}
             <div className="status-left">
                 <a href="/welcome" className="app-logo">
                     <span className="logo-pumpkin">🎃</span>
                     <span className="logo-text">Spooky Notes</span>
                 </a>
             </div>
-            {/* Infos utilisateur + bouton déconnexion */}
+            {/* User info + logout button */}
             <div className="status-right">
                 <div className="user-info">
                     <span className="user-avatar">👻</span>
                     <span className="user-name">{user.userName}</span>
                 </div>
-                {/* Déconnexion : vide le localStorage et redirige vers /login */}
+                {/* Logout: clears localStorage and redirects to /login */}
                 <button onClick={logout} className="logout-btn">
-                    Déconnexion
+                    Logout
                 </button>
             </div>
         </header>
@@ -50,7 +50,7 @@ function StatusBar() {
 }
 
 // ============================================
-// APP PRINCIPAL
+// MAIN APP
 // ============================================
 function App() {
     return (
@@ -60,16 +60,16 @@ function App() {
                     <AlertContainer />
                     <StatusBar />
                     <Routes>
-                        {/* Page d'accueil publique avec présentation */}
+                        {/* Public landing page with presentation */}
                         <Route path="/welcome" element={<LandingPage />} />
 
-                        {/* App principale - ProtectedRoute redirige vers /login si non connecté */}
+                        {/* Main app - ProtectedRoute redirects to /login if not authenticated */}
                         <Route path="/" element={
                             <ProtectedRoute>
                                 <FolderList />
                             </ProtectedRoute>
                         } />
-                        {/* Pages d'authentification (publiques) */}
+                        {/* Authentication pages (public) */}
                         <Route path="/login" element={<LoginFormComponent />} />
                         <Route path="/register" element={<RegisterFormComponent />} />
                     </Routes>

@@ -1,4 +1,3 @@
-// Conteneur qui affiche toutes les alertes en haut à droite
 import { useAlert } from '../contexts/AlertContext';
 import './AlertContainer.css';
 

@@ -1,6 +1,3 @@
-// Routes pour l'authentification
-// /login -> LoginFormComponent
-// /createFolder -> RegisterFormComponent
 import type {RouteObject} from 'react-router-dom';
 import { LoginFormComponent } from './components/LoginFormComponent';
 import { RegisterFormComponent } from './components/RegisterFormComponent';

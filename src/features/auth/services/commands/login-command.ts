@@ -1,4 +1,4 @@
-// Command pour le login (POST /users/login)
+// Command for the login (POST /users/login)
 
 export interface LoginCommand {
     userName: string;

@@ -1,4 +1,4 @@
-// Types pour l'utilisateur
+// Types for users
 
 export interface User {
     id: number;
