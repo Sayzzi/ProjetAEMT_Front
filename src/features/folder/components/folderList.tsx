@@ -76,6 +76,11 @@ export function FolderList() {
                 }
                 // Désélectionne la note puis le dossier
                 if (selectedNote) {
+                    // Annule le debounce en cours pour éviter que la note revienne
+                    if (saveTimeoutRef.current) {
+                        clearTimeout(saveTimeoutRef.current);
+                        saveTimeoutRef.current = null;
+                    }
                     setSelectedNote(null);
                     setContentValue("");
                     setNoteTitleValue("");
@@ -242,6 +247,12 @@ export function FolderList() {
 
     // Quand on clique sur une note dans la sidebar (null = désélection)
     function handleSelectNote(note: Note | null) {
+        // Annule le debounce en cours pour éviter que l'ancienne note revienne
+        if (saveTimeoutRef.current) {
+            clearTimeout(saveTimeoutRef.current);
+            saveTimeoutRef.current = null;
+        }
+
         if (note === null) {
             setSelectedNote(null);
             setContentValue("");
