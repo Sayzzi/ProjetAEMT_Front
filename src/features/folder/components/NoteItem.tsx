@@ -5,7 +5,7 @@ import type Note from "../../types/note.ts";
 interface NoteItemProps {
     note: Note;
     isSelected: boolean;
-    onSelect: (note: Note) => void;
+    onSelect: (note: Note | null) => void;
     onDelete: (id: number) => void;
     depth?: number;
 }
@@ -25,7 +25,7 @@ export function NoteItem({ note, isSelected, onSelect, onDelete, depth = 0 }: No
             <li
                 className={`note-item ${isSelected ? "selected" : ""}`}
                 style={{ paddingLeft: `${10 + depth * 16}px` }}
-                onClick={() => onSelect(note)}
+                onClick={() => onSelect(isSelected ? null : note)}
                 onContextMenu={(e) => {
                     e.preventDefault();
                     e.stopPropagation();

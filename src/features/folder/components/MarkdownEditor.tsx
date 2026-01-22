@@ -19,6 +19,8 @@ interface Props {
     onChange: (content: string) => void;
     notes?: MentionItem[];           // Liste des notes pour les @mentions
     onMentionClick?: (noteId: number) => void;  // Callback quand on clique sur une mention
+    locked?: boolean;                // Note bloquée en lecture seule
+    onToggleLock?: () => void;       // Callback pour bloquer/débloquer
 }
 
 // Stats : lignes, mots, caractères
@@ -36,12 +38,17 @@ interface ContextMenu {
 }
 
 // Éditeur WYSIWYG : **gras**, *italique*, # titre, - liste
-function MarkdownEditor({content, onChange, notes = [], onMentionClick}: Props) {
+function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked = false, onToggleLock}: Props) {
 
     const [stats, setStats] = useState<Stats>({lines: 0, words: 0, chars: 0});
-    const [locked, setLocked] = useState(false);
     const [contextMenu, setContextMenu] = useState<ContextMenu>({visible: false, x: 0, y: 0});
     const editorRef = useRef<HTMLDivElement>(null);
+
+    // Ref pour les notes (évite de recréer l'éditeur quand les notes changent)
+    const notesRef = useRef<MentionItem[]>(notes);
+    useEffect(() => {
+        notesRef.current = notes;
+    }, [notes]);
 
     // Calcule les stats en temps réel
     function updateStats(text: string) {
@@ -51,8 +58,8 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick}: Props) 
         setStats({lines, words, chars});
     }
 
-    // Config des @mentions (mémorisée pour éviter les re-renders)
-    const mentionSuggestion = useMemo(() => createMentionSuggestion(notes), [notes]);
+    // Config des @mentions (créée une seule fois avec getter)
+    const mentionSuggestion = useMemo(() => createMentionSuggestion(() => notesRef.current), []);
 
     const editor = useEditor({
 
@@ -110,27 +117,24 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick}: Props) 
             updateStats(text);
         },
 
-    }, [mentionSuggestion]);
+    }, []);
 
 
     // Synchronise le contenu quand on change de note
     useEffect(() => {
         if (editor && content !== editor.getHTML()) {
-            editor.commands.setContent(content);
+            // emitUpdate: false évite de déclencher onUpdate (et donc la boucle de sauvegarde)
+            editor.commands.setContent(content, false);
             updateStats(editor.getText());
         }
     }, [content, editor]);
 
-    const toggleLocked = () => {
-
-        if (!editor) return;
-
-        setLocked(prev => {
-            const newState = !prev;
-            editor.setEditable(!newState);
-            return newState;
-        })
-    }
+    // Met à jour l'état editable quand locked change
+    useEffect(() => {
+        if (editor) {
+            editor.setEditable(!locked);
+        }
+    }, [editor, locked]);
 
     // Gère le clic droit pour afficher le menu contextuel
     const handleContextMenu = (e: React.MouseEvent) => {
@@ -392,8 +396,8 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick}: Props) 
                 <button
                     type="button"
                     className={`toolbar-btn lock-btn ${locked ? 'locked' : ''}`}
-                    onClick={toggleLocked}
-                    data-tooltip={locked ? "Débloquer l'édition" : "Bloquer l'édition"}
+                    onClick={onToggleLock}
+                    data-tooltip={locked ? "Débloquer l'édition (Ctrl+L)" : "Bloquer l'édition (Ctrl+L)"}
                 >
                     {locked ? "🔒" : "🔓"}
                 </button>

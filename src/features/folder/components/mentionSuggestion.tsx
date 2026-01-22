@@ -4,13 +4,15 @@ import tippy, { type Instance } from 'tippy.js';
 import { MentionList, type MentionItem, type MentionListRef } from './MentionList';
 
 // Crée la config suggestion pour TipTap
-export function createMentionSuggestion(notes: MentionItem[]) {
+// Accepte une fonction getter pour éviter de recréer l'éditeur quand les notes changent
+export function createMentionSuggestion(getNoteseFn: () => MentionItem[]) {
     return {
         // Caractère déclencheur
         char: '@',
 
         // Filtre les notes selon la query tapée
         items: ({ query }: { query: string }) => {
+            const notes = getNoteseFn();
             return notes
                 .filter((note) =>
                     note.title?.toLowerCase().includes(query.toLowerCase())

@@ -76,7 +76,8 @@ export function FolderItem({
                     style={{ paddingLeft: `${10 + depth * 16}px` }}
                     onClick={() => {
                         setOpen(!open);  // Toggle ouvert/fermé
-                        onSelectFolder(node.id);
+                        // Si déjà sélectionné, désélectionner (passer null), sinon sélectionner
+                        onSelectFolder(isSelected ? null : node.id);
                     }}
                     onDoubleClick={() => setIsEditing(true)}  // Double-clic = renommer
                     onContextMenu={(e) => {

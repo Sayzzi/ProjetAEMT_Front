@@ -35,6 +35,11 @@ export function FolderList() {
     const [sidebarOpen, setSidebarOpen] = useState(true);           // Sidebar ouverte/fermée
     const [showShortcuts, setShowShortcuts] = useState(false);     // Modal aide raccourcis
     const [rootFolderId, setRootFolderId] = useState<number | null>(null);  // ID du dossier racine
+    const [lockedNotes, setLockedNotes] = useState<Set<number>>(() => {
+        // Charge les notes bloquées depuis localStorage
+        const saved = localStorage.getItem('lockedNotes');
+        return saved ? new Set(JSON.parse(saved)) : new Set();
+    });
     const {user} = useAuth();  // User connecté (contient id, userName, token JWT)
 
     // useRef pour le debounce : garde la valeur entre les renders
@@ -63,14 +68,50 @@ export function FolderList() {
                 return;
             }
 
-            // Escape : Ferme le modal
-            if (e.key === 'Escape' && showShortcuts) {
-                setShowShortcuts(false);
+            // Escape : Ferme le modal ou désélectionne
+            if (e.key === 'Escape') {
+                if (showShortcuts) {
+                    setShowShortcuts(false);
+                    return;
+                }
+                // Désélectionne la note puis le dossier
+                if (selectedNote) {
+                    setSelectedNote(null);
+                    setContentValue("");
+                    setNoteTitleValue("");
+                    return;
+                }
+                if (currentFolderId) {
+                    setCurrentFolderId(null);
+                    return;
+                }
                 return;
             }
 
             // Les raccourcis suivants ne fonctionnent pas si on édite du texte
             if (isEditing) return;
+
+            // Cmd/Ctrl + S : Sauvegarde manuelle immédiate
+            if (isMod && e.key === 's') {
+                e.preventDefault();
+                if (selectedNote && contentValue) {
+                    saveNoteContent(contentValue);
+                }
+                return;
+            }
+
+            // Cmd/Ctrl + D : Nouveau dossier
+            if (isMod && e.key.toLowerCase() === 'd') {
+                e.preventDefault();
+                if (user && rootFolderId) {
+                    handleCreateFolder({
+                        userId: user.id,
+                        parentFolderId: currentFolderId ?? rootFolderId,
+                        title: 'Nouveau dossier'
+                    });
+                }
+                return;
+            }
 
             // Cmd/Ctrl + E : Toggle sidebar
             if (isMod && e.key === 'e') {
@@ -112,8 +153,8 @@ export function FolderList() {
                 return;
             }
 
-            // Cmd/Ctrl + N : Nouvelle note
-            if (isMod && e.key === 'n') {
+            // Cmd/Ctrl  + N : Nouvelle note
+            if (isMod && e.key.toLowerCase() === 'n') {
                 e.preventDefault();
                 const folderId = currentFolderId ?? rootFolderId;
                 if (user && folderId) {
@@ -126,11 +167,20 @@ export function FolderList() {
                 }
                 return;
             }
+
+            // Cmd/Ctrl + L : Bloquer/débloquer la note
+            if (isMod && e.key.toLowerCase() === 'l') {
+                e.preventDefault();
+                if (selectedNote?.id) {
+                    toggleNoteLock(selectedNote.id);
+                }
+                return;
+            }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [showShortcuts, selectedNote?.id, currentFolderId, rootFolderId, user]);
+    }, [showShortcuts, selectedNote, currentFolderId, rootFolderId, user, contentValue]);
 
     // Recharge l'arbre depuis le backend
     async function refreshTree() {
@@ -190,11 +240,17 @@ export function FolderList() {
         await refreshTree();
     }
 
-    // Quand on clique sur une note dans la sidebar
-    function handleSelectNote(note: Note) {
-        setSelectedNote(note);
-        setNoteTitleValue(note.title || "");
-        setContentValue(note.content || "");
+    // Quand on clique sur une note dans la sidebar (null = désélection)
+    function handleSelectNote(note: Note | null) {
+        if (note === null) {
+            setSelectedNote(null);
+            setContentValue("");
+            setNoteTitleValue("");
+        } else {
+            setSelectedNote(note);
+            setNoteTitleValue(note.title || "");
+            setContentValue(note.content || "");
+        }
         setEditingTitle(false);
         setSaveStatus("idle");
     }
@@ -297,6 +353,21 @@ export function FolderList() {
     // Ouvre/ferme la sidebar (bouton ◀/▶)
     function toggleSidebar() {
         setSidebarOpen(!sidebarOpen);
+    }
+
+    // Bloque/débloque une note
+    function toggleNoteLock(noteId: number) {
+        setLockedNotes(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(noteId)) {
+                newSet.delete(noteId);
+            } else {
+                newSet.add(noteId);
+            }
+            // Sauvegarde dans localStorage
+            localStorage.setItem('lockedNotes', JSON.stringify([...newSet]));
+            return newSet;
+        });
     }
 
     // Cherche une note par ID dans l'arbre (récursif)
@@ -544,6 +615,8 @@ export function FolderList() {
                             onChange={handleContentChange}
                             notes={allNotes}
                             onMentionClick={handleMentionClick}
+                            locked={selectedNote?.id ? lockedNotes.has(selectedNote.id) : false}
+                            onToggleLock={() => selectedNote?.id && toggleNoteLock(selectedNote.id)}
                         />
                     </>
                 ) : (
@@ -586,25 +659,36 @@ export function FolderList() {
                                     <span className="shortcut-desc">Aide raccourcis</span>
                                 </div>
                                 <div className="shortcut-item">
-                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>Backspace</kbd></span>
-                                    <span className="shortcut-desc">Supprimer une note/dossier</span>
+                                    <span className="shortcut-keys"><kbd>Escape</kbd></span>
+                                    <span className="shortcut-desc">Désélectionner</span>
                                 </div>
                             </div>
                             <div className="shortcuts-section">
-                                <h3>Notes</h3>
+                                <h3>Notes & Dossiers</h3>
                                 <div className="shortcut-item">
                                     <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>N</kbd></span>
                                     <span className="shortcut-desc">Nouvelle note</span>
+                                </div>
+                                <div className="shortcut-item">
+                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>D</kbd></span>
+                                    <span className="shortcut-desc">Nouveau dossier</span>
+                                </div>
+                                <div className="shortcut-item">
+                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>S</kbd></span>
+                                    <span className="shortcut-desc">Sauvegarder</span>
                                 </div>
                                 <div className="shortcut-item">
                                     <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>P</kbd></span>
                                     <span className="shortcut-desc">Exporter en PDF</span>
                                 </div>
                                 <div className="shortcut-item">
-                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>Z</kbd></span>
-                                    <span className="shortcut-desc">Annuler</span>
+                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>L</kbd></span>
+                                    <span className="shortcut-desc">Bloquer/Débloquer</span>
                                 </div>
-
+                                <div className="shortcut-item">
+                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>Backspace</kbd></span>
+                                    <span className="shortcut-desc">Supprimer</span>
+                                </div>
                             </div>
                             <div className="shortcuts-section">
                                 <h3>Formatage</h3>
@@ -620,12 +704,20 @@ export function FolderList() {
                                     <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>U</kbd></span>
                                     <span className="shortcut-desc">Souligné</span>
                                 </div>
-                            </div>
-                            <div className="shortcuts-section">
-                                <h3>Mentions</h3>
                                 <div className="shortcut-item">
                                     <span className="shortcut-keys"><kbd>@</kbd></span>
                                     <span className="shortcut-desc">Lier une note</span>
+                                </div>
+                            </div>
+                            <div className="shortcuts-section">
+                                <h3>Historique</h3>
+                                <div className="shortcut-item">
+                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>Z</kbd></span>
+                                    <span className="shortcut-desc">Annuler</span>
+                                </div>
+                                <div className="shortcut-item">
+                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>Y</kbd></span>
+                                    <span className="shortcut-desc">Rétablir</span>
                                 </div>
                             </div>
                         </div>
