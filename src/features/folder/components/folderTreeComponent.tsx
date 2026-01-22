@@ -16,9 +16,9 @@ export function FolderTreeComponent({
 }: {
     nodes: FolderNode[],
     currentFolderId: number | null,
-    onSelectFolder: (id: number) => void,
+    onSelectFolder: (id: number | null) => void,
     onDeleteFolder: (id: number) => void,
-    onSelectNote?: (note: Note) => void,
+    onSelectNote?: (note: Note | null) => void,
     selectedNoteId?: number | null,
     onUpdateFolder?: (newTitle: string) => void,
     onDeleteNote?: (id: number) => void,
