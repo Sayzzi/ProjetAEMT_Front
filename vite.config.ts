@@ -1,7 +1,17 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    host: true,             // écoute sur 0.0.0.0
+    port: 5173,
+    watch: { usePolling: true }, // utile macOS/Windows + volumes
+    proxy: {
+      '/api': {
+        target: 'http://backend:8080/', // « backend » = nom de service Compose
+        changeOrigin: true,
+      },
+    },
+  },
 })
