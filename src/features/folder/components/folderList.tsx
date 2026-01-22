@@ -79,6 +79,15 @@ export function FolderList() {
                 return;
             }
 
+            //Cmd/Ctrl + Supprimet : Suppresion d'un dossier/notes
+            if(isMod && e.key === "Backspace"){
+                e.preventDefault()
+                selectedNote?.id != null && handleDeleteNote(selectedNote.id);
+                return;
+
+            }
+
+
             // Cmd/Ctrl + P : Export PDF (si une note est sélectionnée)
             if (isMod && e.key === 'p') {
                 e.preventDefault();
@@ -556,6 +565,10 @@ export function FolderList() {
                                     <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>:</kbd></span>
                                     <span className="shortcut-desc">Aide raccourcis</span>
                                 </div>
+                                <div className="shortcut-item">
+                                    <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>Backspace</kbd></span>
+                                    <span className="shortcut-desc">Supprimer une note/dossier</span>
+                                </div>
                             </div>
                             <div className="shortcuts-section">
                                 <h3>Notes</h3>
@@ -571,6 +584,7 @@ export function FolderList() {
                                     <span className="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>Z</kbd></span>
                                     <span className="shortcut-desc">Annuler</span>
                                 </div>
+
                             </div>
                             <div className="shortcuts-section">
                                 <h3>Formatage</h3>
