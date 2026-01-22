@@ -3,6 +3,12 @@ import {SearchService} from "../services/searchService.ts";
 import type {SearchResultItem} from "../types/searchTypes.ts";
 import "./quickSearch.css";
 
+// Strip HTML tags from text
+function stripHtml(html: string): string {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
+}
+
 interface QuickSearchProps {
     userId?: number | null;
     onOpenFolder: (folderId: number) => void;
@@ -145,7 +151,7 @@ export function QuickSearch({ userId, onOpenFolder, onOpenNote }: QuickSearchPro
                             {item.snippet && (
                                 <div className="quicksearch-snippet">
                                     {item.line ? `Ligne ${item.line} · ` : ""}
-                                    {item.snippet}
+                                    {stripHtml(item.snippet)}
                                 </div>
                             )}
                         </div>
