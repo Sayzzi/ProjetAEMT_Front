@@ -1,4 +1,3 @@
-// Composant principal : affiche la sidebar + l'éditeur de notes
 import {useEffect, useState, useRef, useMemo} from "react";
 import type {FolderNode} from "../../types/folderNode.ts";
 import type Note from "../../types/note.ts";
@@ -18,65 +17,58 @@ import type {UpdateFolderCommand} from "../../types/commands/updateFolderCommand
 import {NoteService} from "../../note/service/note-service.tsx";
 import type {NoteUpdateCommand} from "../../types/commands/noteUpdateCommand.ts";
 
-// Services pour communiquer avec le backend
 const folderService = new FolderService();
 const noteService = new NoteService();
 
 export function FolderList() {
-    // États React : quand ça change, le composant se re-render
-    const [tree, setTree] = useState<FolderNode[]>([]);              // Arbre des dossiers
-    const [rootNotes, setRootNotes] = useState<Note[]>([]);          // Notes du dossier racine
-    const [currentFolderId, setCurrentFolderId] = useState<number | null>(null);  // Dossier sélectionné
-    const [selectedNote, setSelectedNote] = useState<Note | null>(null);  // Note ouverte
-    const [editingTitle, setEditingTitle] = useState(false);         // Mode édition titre
-    const [noteTitleValue, setNoteTitleValue] = useState("");        // Valeur du titre
-    const [contentValue, setContentValue] = useState("");            // Contenu de la note
-    const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");  // Statut sauvegarde
-    const [sidebarOpen, setSidebarOpen] = useState(true);           // Sidebar ouverte/fermée
-    const [showShortcuts, setShowShortcuts] = useState(false);     // Modal aide raccourcis
-    const [rootFolderId, setRootFolderId] = useState<number | null>(null);  // ID du dossier racine
+    const [tree, setTree] = useState<FolderNode[]>([]);
+    const [rootNotes, setRootNotes] = useState<Note[]>([]);
+    const [currentFolderId, setCurrentFolderId] = useState<number | null>(null);
+    const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+    const [editingTitle, setEditingTitle] = useState(false);
+    const [noteTitleValue, setNoteTitleValue] = useState("");
+    const [contentValue, setContentValue] = useState("");
+    const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [showShortcuts, setShowShortcuts] = useState(false);
+    const [rootFolderId, setRootFolderId] = useState<number | null>(null);
     const [lockedNotes, setLockedNotes] = useState<Set<number>>(() => {
-        // Charge les notes bloquées depuis localStorage
         const saved = localStorage.getItem('lockedNotes');
         return saved ? new Set(JSON.parse(saved)) : new Set();
     });
-    const {user} = useAuth();  // User connecté (contient id, userName, token JWT)
+    const {user} = useAuth();
 
-    // useRef pour le debounce : garde la valeur entre les renders
+    // Debounce timer for auto-save
     const saveTimeoutRef = useRef<number | null>(null);
 
-    // useEffect : s'exécute quand user change (au login)
     useEffect(() => {
         if (user) {
             refreshTree();
         }
     }, [user]);
 
-    // Raccourcis clavier globaux
+    // Global keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            // Ignore si on tape dans un input/textarea
             const target = e.target as HTMLElement;
             const isEditing = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+            const isMod = e.ctrlKey || e.metaKey;
 
-            // Cmd/Ctrl + : : Aide raccourcis (fonctionne partout)
-            const isMod = e.ctrlKey || e.metaKey; // Ctrl sur Windows/Linux, Cmd sur Mac
-
+            // Ctrl/Cmd + : or / - Toggle shortcuts help
             if (isMod && (e.key === ':' || e.key === '/')) {
                 e.preventDefault();
                 setShowShortcuts(prev => !prev);
                 return;
             }
 
-            // Escape : Ferme le modal ou désélectionne
+            // Escape - Close modal or deselect
             if (e.key === 'Escape') {
                 if (showShortcuts) {
                     setShowShortcuts(false);
                     return;
                 }
-                // Désélectionne la note puis le dossier
                 if (selectedNote) {
-                    // Annule le debounce en cours pour éviter que la note revienne
+                    // Cancel pending debounce to prevent stale closure bug
                     if (saveTimeoutRef.current) {
                         clearTimeout(saveTimeoutRef.current);
                         saveTimeoutRef.current = null;
@@ -93,10 +85,9 @@ export function FolderList() {
                 return;
             }
 
-            // Les raccourcis suivants ne fonctionnent pas si on édite du texte
             if (isEditing) return;
 
-            // Cmd/Ctrl + S : Sauvegarde manuelle immédiate
+            // Ctrl/Cmd + S - Manual save
             if (isMod && e.key === 's') {
                 e.preventDefault();
                 if (selectedNote && contentValue) {
@@ -105,7 +96,7 @@ export function FolderList() {
                 return;
             }
 
-            // Cmd/Ctrl + D : Nouveau dossier
+            // Ctrl/Cmd + D - New folder
             if (isMod && e.key.toLowerCase() === 'd') {
                 e.preventDefault();
                 if (user && rootFolderId) {
@@ -118,38 +109,32 @@ export function FolderList() {
                 return;
             }
 
-            // Cmd/Ctrl + E : Toggle sidebar
+            // Ctrl/Cmd + E - Toggle sidebar
             if (isMod && e.key === 'e') {
                 e.preventDefault();
                 setSidebarOpen(prev => !prev);
                 return;
             }
 
-// Cmd/Ctrl + Backspace/Delete : suppression note ou dossier
+            // Ctrl/Cmd + Backspace/Delete - Delete note or folder
             if (isMod && (e.key === "Backspace" || e.key === "Delete")) {
                 e.preventDefault();
-
-                // 1) Si une note est ouverte => supprimer la note
                 const noteId = selectedNote?.id;
                 if (noteId != null) {
                     handleDeleteNote(noteId);
                     return;
                 }
-
-                // 2) Sinon supprimer le dossier sélectionné (pas la racine)
                 const folderId =
                     currentFolderId != null && currentFolderId !== rootFolderId
                         ? currentFolderId
                         : null;
-
                 if (folderId != null) {
                     handleDeleteFolder(folderId);
                     return;
                 }
             }
 
-
-            // Cmd/Ctrl + P : Export PDF (si une note est sélectionnée)
+            // Ctrl/Cmd + P - Export PDF
             if (isMod && e.key === 'p') {
                 e.preventDefault();
                 if (selectedNote?.id) {
@@ -158,7 +143,7 @@ export function FolderList() {
                 return;
             }
 
-            // Cmd/Ctrl  + N : Nouvelle note
+            // Ctrl/Cmd + N - New note
             if (isMod && e.key.toLowerCase() === 'n') {
                 e.preventDefault();
                 const folderId = currentFolderId ?? rootFolderId;
@@ -173,7 +158,7 @@ export function FolderList() {
                 return;
             }
 
-            // Cmd/Ctrl + L : Bloquer/débloquer la note
+            // Ctrl/Cmd + L - Toggle note lock
             if (isMod && e.key.toLowerCase() === 'l') {
                 e.preventDefault();
                 if (selectedNote?.id) {
@@ -187,18 +172,15 @@ export function FolderList() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [showShortcuts, selectedNote, currentFolderId, rootFolderId, user, contentValue]);
 
-    // Recharge l'arbre depuis le backend
     async function refreshTree() {
         if (!user) return;
         const { folders, notes } = await folderService.getAllFoldersAndNotesByUser(user.id);
-
         const { tree, rootNotes, rootFolderId } = buildFolderTree(folders, notes);
         setTree(tree);
         setRootNotes(rootNotes);
         setRootFolderId(rootFolderId);
     }
 
-    // Crée un nouveau dossier
     async function handleCreateFolder(data: any) {
         if (user == null) {
             alert("User non connecté");
@@ -208,35 +190,28 @@ export function FolderList() {
         await refreshTree();
     }
 
-    // Crée une nouvelle note dans le dossier courant
     async function handleCreateNote(data: any) {
         const createdNote = await noteService.createNote(data);
         await refreshTree();
-        // Sélectionne automatiquement la note créée
         setSelectedNote(createdNote);
         setNoteTitleValue(createdNote.title || "");
         setContentValue(createdNote.content || "");
     }
 
-    // Supprime un dossier (clic droit > supprimer)
     async function handleDeleteFolder(id: number) {
         if (user == null) {
             alert("User non connecté");
             return;
         }
         await folderService.deleteFolder(id);
-
         if (currentFolderId === id) {
             setCurrentFolderId(rootFolderId ?? null);
         }
-
         await refreshTree();
     }
 
-    // Supprime une note (clic droit > supprimer)
     async function handleDeleteNote(id: number) {
         await noteService.deleteNote(id);
-        // Si c'était la note ouverte, on la ferme
         if (selectedNote?.id === id) {
             setSelectedNote(null);
             setContentValue("");
@@ -245,9 +220,8 @@ export function FolderList() {
         await refreshTree();
     }
 
-    // Quand on clique sur une note dans la sidebar (null = désélection)
     function handleSelectNote(note: Note | null) {
-        // Annule le debounce en cours pour éviter que l'ancienne note revienne
+        // Cancel pending debounce to prevent stale closure bug
         if (saveTimeoutRef.current) {
             clearTimeout(saveTimeoutRef.current);
             saveTimeoutRef.current = null;
@@ -266,7 +240,6 @@ export function FolderList() {
         setSaveStatus("idle");
     }
 
-    // Sauvegarde le titre (Enter ou perte de focus)
     async function saveNoteTitle() {
         if (selectedNote && noteTitleValue.trim()) {
             const command: NoteUpdateCommand = {
@@ -276,15 +249,13 @@ export function FolderList() {
             };
             await noteService.updateNote(command);
             setSelectedNote({ ...selectedNote, title: noteTitleValue });
-            // Met à jour le titre dans l'arbre (pour la sidebar)
             updateNoteInTree(selectedNote.id!, { title: noteTitleValue });
         }
         setEditingTitle(false);
     }
 
-    // Met à jour une note dans l'arbre local (évite de recharger tout l'arbre)
+    // Updates note in local state to avoid full tree reload
     function updateNoteInTree(noteId: number, updates: Partial<Note>) {
-        // Met à jour dans l'arbre des dossiers
         setTree(prevTree => {
             const updateInNodes = (nodes: FolderNode[]): FolderNode[] => {
                 return nodes.map(folder => ({
@@ -298,7 +269,6 @@ export function FolderList() {
             return updateInNodes(prevTree);
         });
 
-        // Met à jour dans les notes racine
         setRootNotes(prevNotes =>
             prevNotes.map(note =>
                 note.id === noteId ? { ...note, ...updates } : note
@@ -306,7 +276,7 @@ export function FolderList() {
         );
     }
 
-    // Sauvegarde le contenu (appelé après 1s sans frappe = debounce)
+    // Called after 1s debounce
     async function saveNoteContent(content: string) {
         if (!selectedNote) return;
         const command: NoteUpdateCommand = {
@@ -318,35 +288,29 @@ export function FolderList() {
             setSaveStatus("saving");
             await noteService.updateNote(command);
             const now = new Date().toISOString();
-            // Met à jour la note sélectionnée
             setSelectedNote({ ...selectedNote, content, updatedAt: now });
-            // Met à jour la note dans l'arbre local
             updateNoteInTree(selectedNote.id!, { content, updatedAt: now });
             setSaveStatus("saved");
-            // Remet à idle après 2s
             setTimeout(() => setSaveStatus("idle"), 2000);
         } catch {
             setSaveStatus("idle");
         }
     }
 
-    // Appelé à chaque frappe : attend 1s avant de sauvegarder (debounce)
+    // Debounced content change handler (1s delay)
     function handleContentChange(newContent: string) {
         setContentValue(newContent);
         setSaveStatus("idle");
 
-        // Annule le timer précédent si on tape encore
         if (saveTimeoutRef.current) {
             clearTimeout(saveTimeoutRef.current);
         }
 
-        // Lance un nouveau timer de 1s
         saveTimeoutRef.current = window.setTimeout(() => {
             saveNoteContent(newContent);
         }, 1000);
     }
 
-    // Renomme un dossier (double-clic)
     async function handleUpdateFolder(folderId: number, newTitle: string) {
         if (user == null) {
             alert("User non connecté");
@@ -361,12 +325,10 @@ export function FolderList() {
         await refreshTree();
     }
 
-    // Ouvre/ferme la sidebar (bouton ◀/▶)
     function toggleSidebar() {
         setSidebarOpen(!sidebarOpen);
     }
 
-    // Bloque/débloque une note
     function toggleNoteLock(noteId: number) {
         setLockedNotes(prev => {
             const newSet = new Set(prev);
@@ -375,19 +337,16 @@ export function FolderList() {
             } else {
                 newSet.add(noteId);
             }
-            // Sauvegarde dans localStorage
             localStorage.setItem('lockedNotes', JSON.stringify([...newSet]));
             return newSet;
         });
     }
 
-    // Cherche une note par ID dans l'arbre (récursif)
+    // Recursively searches for a note by ID in the folder tree
     function findNoteInTree(nodes: FolderNode[], noteId: number): Note | null {
         for (const folder of nodes) {
-            // Cherche dans les notes du dossier
             const note = folder.notes?.find(n => n.id === noteId);
             if (note) return note;
-            // Cherche dans les sous-dossiers
             if (folder.children?.length) {
                 const found = findNoteInTree(folder.children, noteId);
                 if (found) return found;
@@ -396,17 +355,13 @@ export function FolderList() {
         return null;
     }
 
-    // Callback QuickSearch : ouvre un dossier
     function handleQuickOpenFolder(folderId: number) {
         setCurrentFolderId(folderId);
         setSidebarOpen(true);
     }
 
-    // Callback QuickSearch : ouvre une note
     function handleQuickOpenNote(noteId: number, folderId?: number | null) {
-        // Sélectionne le dossier parent si fourni
         if (folderId) setCurrentFolderId(folderId);
-        // Cherche la note dans l'arbre ou les notes racine
         const note = findNoteInTree(tree, noteId) || rootNotes.find(n => n.id === noteId);
         if (note) {
             handleSelectNote(note);
@@ -414,7 +369,7 @@ export function FolderList() {
         setSidebarOpen(true);
     }
 
-    // Collecte toutes les notes pour les @mentions (excluant la note courante)
+    // Collects all notes for @mentions (excluding current note)
     const allNotes = useMemo((): MentionItem[] => {
         const collectNotes = (nodes: FolderNode[]): MentionItem[] => {
             let result: MentionItem[] = [];
@@ -433,7 +388,6 @@ export function FolderList() {
             return result;
         };
 
-        // Notes des dossiers + notes racine
         const treeNotes = collectNotes(tree);
         const rootNotesItems = rootNotes
             .filter(n => n.id !== selectedNote?.id)
@@ -442,7 +396,6 @@ export function FolderList() {
         return [...rootNotesItems, ...treeNotes];
     }, [tree, rootNotes, selectedNote?.id]);
 
-    // Callback @mention : ouvre la note liée
     function handleMentionClick(noteId: number) {
         const note = findNoteInTree(tree, noteId) || rootNotes.find(n => n.id === noteId);
         if (note) {
@@ -451,16 +404,13 @@ export function FolderList() {
     }
 
     return (
-        // Layout principal : sidebar + zone de contenu
         <div className={`app-layout ${sidebarOpen ? '' : 'sidebar-collapsed'}`}>
-            {/* === SIDEBAR === Navigation des dossiers/notes */}
             <aside className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
                 <div className="sidebar-header">
                     <h2>
                         <span className="sidebar-icon">📁</span>
                         Mes dossiers
                     </h2>
-                    {/* Bouton toggle : masque/affiche la sidebar */}
                     <button
                         className="sidebar-toggle"
                         onClick={toggleSidebar}
@@ -472,7 +422,6 @@ export function FolderList() {
 
                 {sidebarOpen && (
                     <>
-                        {/* Boutons créer dossier/note */}
                         <FolderHeader
                             onCreateFolder={handleCreateFolder}
                             onCreateNote={handleCreateNote}
@@ -480,9 +429,7 @@ export function FolderList() {
                             rootFolderId={rootFolderId}
                         />
 
-                        {/* Arbre des dossiers et notes */}
                         <div className="sidebar-content">
-                            {/* Notes du dossier racine (sans dossier) */}
                             {rootNotes.length > 0 && (
                                 <ul className="root-notes-section">
                                     {rootNotes.map(note => (
@@ -510,7 +457,6 @@ export function FolderList() {
                             />
                         </div>
 
-                        {/* Export ZIP en bas de la sidebar */}
                         <div className="sidebar-footer">
                             <ExportZipButton
                                 folderId={currentFolderId!}
@@ -521,7 +467,6 @@ export function FolderList() {
                 )}
             </aside>
 
-            {/* Bouton flottant ☰ visible uniquement quand sidebar fermée */}
             {!sidebarOpen && (
                 <button
                     className="sidebar-toggle-floating"
@@ -532,11 +477,9 @@ export function FolderList() {
                 </button>
             )}
 
-            {/* Zone principale : éditeur de note */}
             <main className="content">
                 {selectedNote ? (
                     <>
-                        {/* Barre d'outils : export PDF + statut sauvegarde */}
                         <div className="note-toolbar">
                             <div className="toolbar-left">
                                 <ExportPdfButton
@@ -545,7 +488,6 @@ export function FolderList() {
                                 />
                             </div>
                             <div className="toolbar-right">
-                                {/* Message de statut */}
                                 {saveStatus === "saving" && (
                                     <span className="save-status saving">
                                         <span className="status-dot"></span>
@@ -561,7 +503,6 @@ export function FolderList() {
                             </div>
                         </div>
 
-                        {/* Titre : double-clic pour éditer */}
                         <div className="note-header">
                             {editingTitle ? (
                                 <input
@@ -586,7 +527,6 @@ export function FolderList() {
                             )}
                         </div>
 
-                        {/* Dates : création + dernière modif */}
                         <div className="note-meta">
                             <span className="meta-item">
                                 <span className="meta-icon">📅</span>
@@ -620,7 +560,6 @@ export function FolderList() {
                             </span>
                         </div>
 
-                        {/* Éditeur TipTap - tape @ pour lier une note */}
                         <MarkdownEditor
                             content={contentValue}
                             onChange={handleContentChange}
@@ -639,14 +578,12 @@ export function FolderList() {
                 )}
             </main>
 
-            {/* QuickSearch : double-shift pour ouvrir */}
             <QuickSearch
                 userId={user?.id}
                 onOpenFolder={handleQuickOpenFolder}
                 onOpenNote={handleQuickOpenNote}
             />
 
-            {/* Modal aide raccourcis */}
             {showShortcuts && (
                 <div className="shortcuts-overlay" onClick={() => setShowShortcuts(false)}>
                     <div className="shortcuts-modal" onClick={(e) => e.stopPropagation()}>

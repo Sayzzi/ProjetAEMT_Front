@@ -3,12 +3,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../services/auth-service.ts';
 import './RegisterForm.css';
 
-// Règles de validation du mot de passe
 interface PasswordRule {
     label: string;
     test: (password: string) => boolean;
 }
 
+// Password validation rules
 const passwordRules: PasswordRule[] = [
     { label: '8 caractères minimum', test: (p) => p.length >= 8 },
     { label: 'Une lettre majuscule', test: (p) => /[A-Z]/.test(p) },
@@ -24,7 +24,6 @@ export function RegisterFormComponent() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    // Vérifie chaque règle en temps réel
     const ruleResults = useMemo(() => {
         return passwordRules.map(rule => ({
             ...rule,
@@ -32,10 +31,7 @@ export function RegisterFormComponent() {
         }));
     }, [password]);
 
-    // Toutes les règles sont-elles valides ?
     const allRulesValid = ruleResults.every(r => r.valid);
-
-    // Les mots de passe correspondent ?
     const passwordsMatch = password === confirmPassword && confirmPassword.length > 0;
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -92,7 +88,6 @@ export function RegisterFormComponent() {
                         required
                     />
 
-                    {/* Indicateur de force en temps réel */}
                     {password.length > 0 && (
                         <div className="password-rules">
                             {ruleResults.map((rule, index) => (

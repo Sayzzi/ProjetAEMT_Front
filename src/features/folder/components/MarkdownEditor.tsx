@@ -17,40 +17,36 @@ import type { MentionItem } from './MentionList';
 interface Props {
     content: string;
     onChange: (content: string) => void;
-    notes?: MentionItem[];           // Liste des notes pour les @mentions
-    onMentionClick?: (noteId: number) => void;  // Callback quand on clique sur une mention
-    locked?: boolean;                // Note bloquée en lecture seule
-    onToggleLock?: () => void;       // Callback pour bloquer/débloquer
+    notes?: MentionItem[];
+    onMentionClick?: (noteId: number) => void;
+    locked?: boolean;
+    onToggleLock?: () => void;
 }
 
-// Stats : lignes, mots, caractères
 interface Stats {
     lines: number;
     words: number;
     chars: number;
 }
 
-// Menu contextuel position
 interface ContextMenu {
     visible: boolean;
     x: number;
     y: number;
 }
 
-// Éditeur WYSIWYG : **gras**, *italique*, # titre, - liste
 function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked = false, onToggleLock}: Props) {
 
     const [stats, setStats] = useState<Stats>({lines: 0, words: 0, chars: 0});
     const [contextMenu, setContextMenu] = useState<ContextMenu>({visible: false, x: 0, y: 0});
     const editorRef = useRef<HTMLDivElement>(null);
 
-    // Ref pour les notes (évite de recréer l'éditeur quand les notes changent)
+    // Ref prevents editor recreation when notes change
     const notesRef = useRef<MentionItem[]>(notes);
     useEffect(() => {
         notesRef.current = notes;
     }, [notes]);
 
-    // Calcule les stats en temps réel
     function updateStats(text: string) {
         const lines = text.split('\n').filter(line => line.trim()).length;
         const words = text.split(/\s+/).filter(w => w.trim()).length;
@@ -58,7 +54,6 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
         setStats({lines, words, chars});
     }
 
-    // Config des @mentions (créée une seule fois avec getter)
     const mentionSuggestion = useMemo(() => createMentionSuggestion(() => notesRef.current), []);
 
     const editor = useEditor({
@@ -88,7 +83,6 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
                 autolink: true,
                 openOnClick: false,
             }),
-            // Extension @mention pour lier des notes
             Mention.configure({
                 HTMLAttributes: {
                     class: 'note-mention',
@@ -119,28 +113,23 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
 
     }, []);
 
-
-    // Synchronise le contenu quand on change de note
+    // Sync content when switching notes (emitUpdate: false prevents save loop)
     useEffect(() => {
         if (editor && content !== editor.getHTML()) {
-            // emitUpdate: false évite de déclencher onUpdate (et donc la boucle de sauvegarde)
             editor.commands.setContent(content, false);
             updateStats(editor.getText());
         }
     }, [content, editor]);
 
-    // Met à jour l'état editable quand locked change
     useEffect(() => {
         if (editor) {
             editor.setEditable(!locked);
         }
     }, [editor, locked]);
 
-    // Gère le clic droit pour afficher le menu contextuel
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
         if (locked) return;
-
         setContextMenu({
             visible: true,
             x: e.clientX,
@@ -148,19 +137,16 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
         });
     };
 
-    // Ferme le menu contextuel
     const closeContextMenu = () => {
         setContextMenu({...contextMenu, visible: false});
     };
 
-    // Ferme le menu si on clique ailleurs
     useEffect(() => {
         const handleClick = () => closeContextMenu();
         document.addEventListener('click', handleClick);
         return () => document.removeEventListener('click', handleClick);
     }, []);
 
-    // Gère le clic sur une @mention
     const handleEditorClick = (e: React.MouseEvent) => {
         const target = e.target as HTMLElement;
         if (target.classList.contains('note-mention') && onMentionClick) {
@@ -171,7 +157,6 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
         }
     };
 
-    // Actions du menu contextuel
     const insertTable = () => {
         editor?.chain().focus().insertTable({rows: 3, cols: 3, withHeaderRow: true}).run();
         closeContextMenu();
@@ -182,8 +167,7 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
     const deleteCol = () => { editor?.chain().focus().deleteColumn().run(); closeContextMenu(); };
     const deleteTable = () => { editor?.chain().focus().deleteTable().run(); closeContextMenu(); };
 
-    // === ACTIONS TOOLBAR ===
-    // Chaque fonction applique un format au texte sélectionné via TipTap
+    // Toolbar formatting actions
     const toggleBold = () => editor?.chain().focus().toggleBold().run();
     const toggleItalic = () => editor?.chain().focus().toggleItalic().run();
     const toggleUnderline = () => editor?.chain().focus().toggleUnderline().run();
@@ -200,18 +184,13 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
     const undo = () => editor?.chain().focus().undo().run();
     const redo = () => editor?.chain().focus().redo().run();
 
-    // Vérifie si un format est actif (pour highlight le bouton)
     const isActive = (format: string, options?: any) => {
         return editor?.isActive(format, options) ?? false;
     };
 
     return (
-
         <div className="markdown-editor">
-
-            {/* === BARRE D'OUTILS === Boutons de mise en forme du texte */}
             <div className="editor-toolbar">
-                {/* Groupe 1 : Style de texte (gras, italique, souligné, barré) */}
                 <div className="toolbar-group">
                     <button
                         type="button"
@@ -253,7 +232,6 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
 
                 <div className="toolbar-divider"></div>
 
-                {/* Groupe 2 : Titres (H1, H2, H3) */}
                 <div className="toolbar-group">
                     <button
                         type="button"
@@ -286,7 +264,6 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
 
                 <div className="toolbar-divider"></div>
 
-                {/* Groupe 3 : Listes et citations */}
                 <div className="toolbar-group">
                     <button
                         type="button"
@@ -319,7 +296,6 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
 
                 <div className="toolbar-divider"></div>
 
-                {/* Groupe 4 : Code et séparateurs */}
                 <div className="toolbar-group">
                     <button
                         type="button"
@@ -352,7 +328,6 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
 
                 <div className="toolbar-divider"></div>
 
-                {/* Groupe 5 : Insertion de tableau */}
                 <div className="toolbar-group">
                     <button
                         type="button"
@@ -365,10 +340,8 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
                     </button>
                 </div>
 
-                {/* Espace flexible pour pousser les boutons suivants à droite */}
                 <div className="toolbar-spacer"></div>
 
-                {/* Groupe 6 : Annuler / Rétablir */}
                 <div className="toolbar-group">
                     <button
                         type="button"
@@ -392,7 +365,6 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
 
                 <div className="toolbar-divider"></div>
 
-                {/* Bouton verrouillage : empêche les modifications accidentelles */}
                 <button
                     type="button"
                     className={`toolbar-btn lock-btn ${locked ? 'locked' : ''}`}
@@ -403,7 +375,6 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
                 </button>
             </div>
 
-            {/* Zone d'édition TipTap - clic droit pour menu contextuel tableau */}
             <div
                 className={locked ? "editor-wrapper locked" : "editor-wrapper"}
                 onContextMenu={handleContextMenu}
@@ -413,7 +384,6 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
                 <EditorContent editor={editor}/>
             </div>
 
-            {/* Menu contextuel (clic droit) */}
             {contextMenu.visible && (
                 <div
                     className="context-menu"
@@ -430,7 +400,6 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
                 </div>
             )}
 
-            {/* Barre de statistiques */}
             <div className="stats-bar">
                 <span className="stat-item">
                     📄 <strong>{stats.lines}</strong> ligne{stats.lines > 1 ? 's' : ''}

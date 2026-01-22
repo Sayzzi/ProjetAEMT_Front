@@ -9,7 +9,6 @@ interface QuickSearchProps {
     onOpenNote: (noteId: number, folderId?: number | null) => void;
 }
 
-// Palette pour afficher un badge par type
 const typeLabel: Record<string, string> = {
     FOLDER: "Dossier",
     NOTE: "Note",
@@ -28,7 +27,7 @@ export function QuickSearch({ userId, onOpenFolder, onOpenNote }: QuickSearchPro
     const debounceRef = useRef<number | null>(null);
     const lastShiftRef = useRef<number>(0);
 
-    // Double Shift = ouvre la fenêtre
+    // Double Shift opens search panel
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape" && isOpen) {
@@ -44,7 +43,6 @@ export function QuickSearch({ userId, onOpenFolder, onOpenNote }: QuickSearchPro
                     setQuery("");
                     setResults([]);
                     setError(null);
-                    // Focus input après ouverture
                     setTimeout(() => inputRef.current?.focus(), 40);
                 }
                 lastShiftRef.current = now;
@@ -55,7 +53,7 @@ export function QuickSearch({ userId, onOpenFolder, onOpenNote }: QuickSearchPro
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [isOpen, userId]);
 
-    // Lance la recherche (avec debounce)
+    // Debounced search
     useEffect(() => {
         if (!isOpen || !userId || userId <= 0) return;
 

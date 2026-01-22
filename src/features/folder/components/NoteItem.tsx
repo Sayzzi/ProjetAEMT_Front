@@ -1,4 +1,3 @@
-// Composant qui affiche UNE note avec son menu contextuel
 import {useState, useEffect} from "react";
 import type Note from "../../types/note.ts";
 
@@ -13,7 +12,6 @@ interface NoteItemProps {
 export function NoteItem({ note, isSelected, onSelect, onDelete, depth = 0 }: NoteItemProps) {
     const [contextMenu, setContextMenu] = useState<{x: number, y: number} | null>(null);
 
-    // Ferme le menu contextuel au clic ailleurs
     useEffect(() => {
         const close = () => setContextMenu(null);
         window.addEventListener("click", close);

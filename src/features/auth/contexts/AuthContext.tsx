@@ -10,7 +10,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// Charge l'utilisateur depuis localStorage au démarrage
 function loadUserFromStorage(): User | null {
     const stored = localStorage.getItem('user');
     return stored ? JSON.parse(stored) : null;
@@ -19,7 +18,6 @@ function loadUserFromStorage(): User | null {
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUserState] = useState<User | null>(loadUserFromStorage);
 
-    // Sauvegarde l'utilisateur dans localStorage
     const setUser = (newUser: User | null) => {
         if (newUser) {
             localStorage.setItem('user', JSON.stringify(newUser));
@@ -29,13 +27,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUserState(newUser);
     };
 
-    // Déconnexion
     const logout = () => {
         localStorage.removeItem('user');
         setUserState(null);
     };
 
-    // Récupère le token JWT
     const getToken = () => user?.token ?? null;
 
     return (

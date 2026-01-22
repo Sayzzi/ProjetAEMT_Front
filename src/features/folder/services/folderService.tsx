@@ -7,7 +7,6 @@ import {api} from "../../auth/services/api.ts";
 
 export class FolderService {
 
-    // POST /folders - Ajout d'un folder
     async createFolder(command: CreateFolderCommand): Promise<Folder> {
         const response = await api.post("/folders", command);
         if (!response.ok) {
@@ -16,7 +15,6 @@ export class FolderService {
         return response.json();
     }
 
-    // GET /folders/all/:id - Récupère tous les folders et notes d'un user
     async getAllFoldersAndNotesByUser(userId: number): Promise<{ folders: FolderDto[], notes: NoteDto[] }> {
         const response = await api.get(`/folders/all/${userId}`);
         if (!response.ok) {
@@ -25,7 +23,6 @@ export class FolderService {
         return response.json();
     }
 
-    // DELETE /folders/:id - Suppression d'un dossier
     async deleteFolder(folderId: number): Promise<boolean> {
         const response = await api.delete(`/folders/${folderId}`);
         if (!response.ok) {
@@ -34,7 +31,6 @@ export class FolderService {
         return true;
     }
 
-    // PUT /folders - Modification d'un dossier
     async updateFolder(command: UpdateFolderCommand): Promise<void> {
         const response = await api.put("/folders", command);
         if (!response.ok) {

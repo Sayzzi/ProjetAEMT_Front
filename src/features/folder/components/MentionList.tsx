@@ -1,4 +1,3 @@
-// Composant dropdown pour les suggestions de notes (@mention)
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 
 export interface MentionItem {
@@ -11,21 +10,19 @@ interface MentionListProps {
     command: (item: { id: string; label: string }) => void;
 }
 
-// Ref exposée à TipTap pour naviguer avec les flèches
 export interface MentionListRef {
     onKeyDown: (event: { event: KeyboardEvent }) => boolean;
 }
 
+// Dropdown component for @mention suggestions
 export const MentionList = forwardRef<MentionListRef, MentionListProps>(
     ({ items, command }, ref) => {
         const [selectedIndex, setSelectedIndex] = useState(0);
 
-        // Reset la sélection quand les items changent
         useEffect(() => {
             setSelectedIndex(0);
         }, [items]);
 
-        // Gère les touches clavier (flèches, Enter, Escape)
         useImperativeHandle(ref, () => ({
             onKeyDown: ({ event }) => {
                 if (event.key === 'ArrowUp') {
