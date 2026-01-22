@@ -79,12 +79,27 @@ export function FolderList() {
                 return;
             }
 
-            //Cmd/Ctrl + Supprimet : Suppresion d'un dossier/notes
-            if(isMod && e.key === "Backspace"){
-                e.preventDefault()
-                selectedNote?.id != null && handleDeleteNote(selectedNote.id);
-                return;
+// Cmd/Ctrl + Backspace/Delete : suppression note ou dossier
+            if (isMod && (e.key === "Backspace" || e.key === "Delete")) {
+                e.preventDefault();
 
+                // 1) Si une note est ouverte => supprimer la note
+                const noteId = selectedNote?.id;
+                if (noteId != null) {
+                    handleDeleteNote(noteId);
+                    return;
+                }
+
+                // 2) Sinon supprimer le dossier sélectionné (pas la racine)
+                const folderId =
+                    currentFolderId != null && currentFolderId !== rootFolderId
+                        ? currentFolderId
+                        : null;
+
+                if (folderId != null) {
+                    handleDeleteFolder(folderId);
+                    return;
+                }
             }
 
 
@@ -155,6 +170,11 @@ export function FolderList() {
             return;
         }
         await folderService.deleteFolder(id);
+
+        if (currentFolderId === id) {
+            setCurrentFolderId(rootFolderId ?? null);
+        }
+
         await refreshTree();
     }
 
