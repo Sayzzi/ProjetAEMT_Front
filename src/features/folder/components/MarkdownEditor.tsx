@@ -1,4 +1,4 @@
-import {EditorContent, useEditor} from '@tiptap/react';
+import {EditorContent, useEditor, Extension} from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import Link from '@tiptap/extension-link';
@@ -8,6 +8,25 @@ import { TableRow } from '@tiptap/extension-table-row';
 import { TableCell } from '@tiptap/extension-table-cell';
 import { TableHeader } from '@tiptap/extension-table-header';
 import Mention from '@tiptap/extension-mention';
+
+// Custom extension to exit table with Ctrl+Enter
+const ExitTable = Extension.create({
+    name: 'exitTable',
+    addKeyboardShortcuts() {
+        return {
+            'Mod-Enter': ({ editor }) => {
+                // Check if we're in a table
+                if (editor.isActive('table')) {
+                    const { $to } = editor.state.selection;
+                    const after = $to.after(1);
+                    editor.chain().insertContentAt(after, { type: 'paragraph' }).focus(after + 1).run();
+                    return true;
+                }
+                return false;
+            },
+        };
+    },
+});
 
 import {useEffect, useState, useRef, useMemo} from 'react';
 import './MarkdownEditor.css';
@@ -102,6 +121,7 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
             Placeholder.configure({
                 placeholder: 'Écrivez ici... Tapez @ pour lier une note',
             }),
+            ExitTable,
         ],
         content: content,
         onUpdate: ({editor}) => {
@@ -166,6 +186,12 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
     const addColAfter = () => { editor?.chain().focus().addColumnAfter().run(); closeContextMenu(); };
     const deleteCol = () => { editor?.chain().focus().deleteColumn().run(); closeContextMenu(); };
     const deleteTable = () => { editor?.chain().focus().deleteTable().run(); closeContextMenu(); };
+
+    // Exit table - add paragraph after table and move cursor there
+    const exitTable = () => {
+        editor?.chain().focus().insertContentAt(editor.state.selection.$to.after(1), { type: 'paragraph' }).run();
+        closeContextMenu();
+    };
 
     // Toolbar formatting actions
     const toggleBold = () => editor?.chain().focus().toggleBold().run();
@@ -397,6 +423,8 @@ function MarkdownEditor({content, onChange, notes = [], onMentionClick, locked =
                     <button onClick={deleteRow}>Supprimer ligne</button>
                     <button onClick={deleteCol}>Supprimer colonne</button>
                     <button onClick={deleteTable} className="danger">Supprimer tableau</button>
+                    <hr />
+                    <button onClick={exitTable}>↓ Sortir du tableau</button>
                 </div>
             )}
 
