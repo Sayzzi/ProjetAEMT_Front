@@ -20,7 +20,7 @@ export function FolderTreeComponent({
     onDeleteFolder: (id: number) => void,
     onSelectNote?: (note: Note | null) => void,
     selectedNoteId?: number | null,
-    onUpdateFolder?: (newTitle: string) => void,
+    onUpdateFolder?: (folderId: number, newTitle: string) => void,
     onDeleteNote?: (id: number) => void,
     depth?: number
 }) {

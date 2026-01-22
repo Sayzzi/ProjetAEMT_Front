@@ -336,13 +336,13 @@ export function FolderList() {
     }
 
     // Renomme un dossier (double-clic)
-    async function handleUpdateFolder(newTitle: string) {
+    async function handleUpdateFolder(folderId: number, newTitle: string) {
         if (user == null) {
             alert("User non connecté");
             return;
         }
         const command: UpdateFolderCommand = {
-            id: currentFolderId,
+            id: folderId,
             userId: user.id,
             title: newTitle,
         };

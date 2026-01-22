@@ -35,7 +35,7 @@ export function FolderItem({
     function handleRename() {
         if (folderTitleValue.trim() !== "" && folderTitleValue !== node.title) {
             setFolderTitleValue(folderTitleValue);
-            onUpdateFolder(folderTitleValue);
+            onUpdateFolder(node.id, folderTitleValue);
         }
         setIsEditing(false);
     }
