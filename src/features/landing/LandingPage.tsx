@@ -29,32 +29,32 @@ export function LandingPage() {
             <section className="hero">
                 <div className="hero-content">
                     <div className="hero-badge">
-                        <span>🕸️</span> Notes Application
+                        <span>🕸️</span> Application de Notes
                     </div>
                     <h1 className="hero-title">
-                        <span className="title-line">Take notes</span>
-                        <span className="title-line accent">Terribly</span>
-                        <span className="title-line">efficient</span>
+                        <span className="title-line">Prenez des notes</span>
+                        <span className="title-line accent">Terriblement</span>
+                        <span className="title-line">efficaces</span>
                     </h1>
                     <p className="hero-description">
-                        Organize your ideas in a Halloween atmosphere.
-                        Folders, Markdown notes, PDF export...
-                        Everything you need to be productive, with style.
+                        Organisez vos idées dans une ambiance Halloween.
+                        Dossiers, notes Markdown, export PDF...
+                        Tout ce qu'il faut pour être productif, avec style.
                     </p>
                     <div className="hero-actions">
                         {user ? (
                             <Link to="/" className="cta-btn primary">
-                                <span>Access my notes</span>
+                                <span>Accéder à mes notes</span>
                                 <span className="btn-icon">→</span>
                             </Link>
                         ) : (
                             <>
                                 <Link to="/register" className="cta-btn primary">
-                                    <span>Start for free</span>
+                                    <span>Commencer gratuitement</span>
                                     <span className="btn-icon">→</span>
                                 </Link>
                                 <Link to="/login" className="cta-btn secondary">
-                                    <span>I already have an account</span>
+                                    <span>J'ai déjà un compte</span>
                                 </Link>
                             </>
                         )}
@@ -72,12 +72,12 @@ export function LandingPage() {
                         </div>
                         <div className="preview-body">
                             <div className="preview-sidebar">
-                                <div className="preview-folder">📁 Projects</div>
-                                <div className="preview-folder">📁 Ideas</div>
-                                <div className="preview-note active">📝 My note</div>
+                                <div className="preview-folder">📁 Projets</div>
+                                <div className="preview-folder">📁 Idées</div>
+                                <div className="preview-note active">📝 Ma note</div>
                             </div>
                             <div className="preview-content">
-                                <div className="preview-note-title">🎃 Welcome!</div>
+                                <div className="preview-note-title">🎃 Bienvenue !</div>
                                 <div className="preview-text-line"></div>
                                 <div className="preview-text-line short"></div>
                                 <div className="preview-text-line"></div>
@@ -91,38 +91,38 @@ export function LandingPage() {
             {/* Features grid with icons and descriptions */}
             <section className="features">
                 <h2 className="section-title">
-                    Features
+                    Fonctionnalités
                 </h2>
                 <div className="features-grid">
                     <div className="feature-card">
                         <div className="feature-icon">📁</div>
-                        <h3>Nested folders</h3>
-                        <p>Organize your notes in an unlimited folder tree</p>
+                        <h3>Dossiers imbriqués</h3>
+                        <p>Organisez vos notes dans une arborescence illimitée</p>
                     </div>
                     <div className="feature-card">
                         <div className="feature-icon">✍️</div>
-                        <h3>Markdown editor</h3>
-                        <p>Format your notes with a powerful WYSIWYG editor</p>
+                        <h3>Éditeur Markdown</h3>
+                        <p>Formatez vos notes avec un éditeur WYSIWYG puissant</p>
                     </div>
                     <div className="feature-card">
                         <div className="feature-icon">📄</div>
-                        <h3>PDF export</h3>
-                        <p>Export your notes to PDF with one click</p>
+                        <h3>Export PDF</h3>
+                        <p>Exportez vos notes en PDF en un clic</p>
                     </div>
                     <div className="feature-card">
                         <div className="feature-icon">📦</div>
-                        <h3>ZIP export</h3>
-                        <p>Download all your notes in one archive</p>
+                        <h3>Export ZIP</h3>
+                        <p>Téléchargez toutes vos notes dans une archive</p>
                     </div>
                     <div className="feature-card">
                         <div className="feature-icon">💾</div>
-                        <h3>Auto-save</h3>
-                        <p>Your notes are saved automatically</p>
+                        <h3>Sauvegarde auto</h3>
+                        <p>Vos notes sont sauvegardées automatiquement</p>
                     </div>
                     <div className="feature-card">
                         <div className="feature-icon">🎃</div>
-                        <h3>Halloween theme</h3>
-                        <p>A unique interface to work in style</p>
+                        <h3>Thème Halloween</h3>
+                        <p>Une interface unique pour travailler avec style</p>
                     </div>
                 </div>
             </section>
@@ -131,7 +131,7 @@ export function LandingPage() {
             <footer className="landing-footer">
                 <div className="footer-content">
                     <span className="footer-logo">🎃 Spooky Notes</span>
-                    <span className="footer-text">Hackathon AEMT 2026 Project</span>
+                    <span className="footer-text">Projet Hackathon AEMT 2026</span>
                 </div>
             </footer>
         </div>

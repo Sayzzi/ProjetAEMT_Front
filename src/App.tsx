@@ -42,7 +42,7 @@ function StatusBar() {
                 </div>
                 {/* Logout: clears localStorage and redirects to /login */}
                 <button onClick={logout} className="logout-btn">
-                    Logout
+                    Déconnexion
                 </button>
             </div>
         </header>
