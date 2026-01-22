@@ -122,7 +122,7 @@
 
 /* Note icon */
 .note-item::before {
-  content: '📝';
+  content: '📄';
   font-size: 0.9rem;
   flex-shrink: 0;
 }
@@ -142,7 +142,7 @@
 }
 
 .note-item.selected::before {
-  content: '✨';
+  content: '✏️';
 }
 
 .note-item.selected:hover {
