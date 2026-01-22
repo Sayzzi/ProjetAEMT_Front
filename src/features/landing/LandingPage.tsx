@@ -91,7 +91,6 @@ export function LandingPage() {
             {/* Grille des fonctionnalités avec icônes et descriptions */}
             <section className="features">
                 <h2 className="section-title">
-                    <span className="title-icon">✨</span>
                     Fonctionnalités
                 </h2>
                 <div className="features-grid">
