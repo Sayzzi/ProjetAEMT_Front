@@ -1,0 +1,161 @@
+/* Conteneur des alertes - fixé en haut à droite */
+.alert-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+}
+
+/* Style de base d'une alerte */
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    background: #1a1a2e;
+    border: 1px solid;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Icône de l'alerte */
+.alert-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+/* Contenu de l'alerte */
+.alert-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.alert-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.alert-message {
+    font-size: 13px;
+    opacity: 0.9;
+    word-wrap: break-word;
+}
+
+/* Bouton fermer */
+.alert-close {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0.6;
+    padding: 0;
+    line-height: 1;
+    transition: opacity 0.2s;
+}
+
+.alert-close:hover {
+    opacity: 1;
+}
+
+/* === TYPES D'ALERTES === */
+
+/* Erreur - Rouge */
+.alert-error {
+    border-color: #ff4757;
+    background: linear-gradient(135deg, #2d1f2f 0%, #1a1a2e 100%);
+}
+
+.alert-error .alert-icon {
+    background: #ff4757;
+    color: white;
+}
+
+.alert-error .alert-title {
+    color: #ff6b7a;
+}
+
+.alert-error .alert-message {
+    color: #ffb3ba;
+}
+
+/* Succès - Vert */
+.alert-success {
+    border-color: #2ed573;
+    background: linear-gradient(135deg, #1f2d2a 0%, #1a1a2e 100%);
+}
+
+.alert-success .alert-icon {
+    background: #2ed573;
+    color: white;
+}
+
+.alert-success .alert-title {
+    color: #5ff5a0;
+}
+
+.alert-success .alert-message {
+    color: #b3ffd1;
+}
+
+/* Warning - Orange */
+.alert-warning {
+    border-color: #ffa502;
+    background: linear-gradient(135deg, #2d2a1f 0%, #1a1a2e 100%);
+}
+
+.alert-warning .alert-icon {
+    background: #ffa502;
+    color: white;
+}
+
+.alert-warning .alert-title {
+    color: #ffbe4d;
+}
+
+.alert-warning .alert-message {
+    color: #ffe0a3;
+}
+
+/* Info - Bleu */
+.alert-info {
+    border-color: #3742fa;
+    background: linear-gradient(135deg, #1f2a2d 0%, #1a1a2e 100%);
+}
+
+.alert-info .alert-icon {
+    background: #3742fa;
+    color: white;
+}
+
+.alert-info .alert-title {
+    color: #6c7aff;
+}
+
+.alert-info .alert-message {
+    color: #b3baff;
+}

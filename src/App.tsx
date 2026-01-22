@@ -11,6 +11,10 @@ import { LandingPage } from "./features/landing/LandingPage.tsx";
 import { AuthProvider, useAuth } from "./features/auth/contexts/AuthContext.tsx";
 import { ProtectedRoute } from "./features/auth/components/ProtectedRoute.tsx";
 
+// Système d'alertes globales
+import { AlertProvider } from "./features/alert/contexts/AlertContext.tsx";
+import { AlertContainer } from "./features/alert/components/AlertContainer.tsx";
+
 // ============================================
 // BARRE DE STATUT - Header avec logo + infos user
 // Visible uniquement quand connecté
@@ -51,23 +55,26 @@ function StatusBar() {
 function App() {
     return (
         <BrowserRouter>
-            <AuthProvider>
-                <StatusBar />
-                <Routes>
-                    {/* Page d'accueil publique avec présentation */}
-                    <Route path="/welcome" element={<LandingPage />} />
+            <AlertProvider>
+                <AuthProvider>
+                    <AlertContainer />
+                    <StatusBar />
+                    <Routes>
+                        {/* Page d'accueil publique avec présentation */}
+                        <Route path="/welcome" element={<LandingPage />} />
 
-                    {/* App principale - ProtectedRoute redirige vers /login si non connecté */}
-                    <Route path="/" element={
-                        <ProtectedRoute>
-                            <FolderList />
-                        </ProtectedRoute>
-                    } />
-                    {/* Pages d'authentification (publiques) */}
-                    <Route path="/login" element={<LoginFormComponent />} />
-                    <Route path="/register" element={<RegisterFormComponent />} />
-                </Routes>
-            </AuthProvider>
+                        {/* App principale - ProtectedRoute redirige vers /login si non connecté */}
+                        <Route path="/" element={
+                            <ProtectedRoute>
+                                <FolderList />
+                            </ProtectedRoute>
+                        } />
+                        {/* Pages d'authentification (publiques) */}
+                        <Route path="/login" element={<LoginFormComponent />} />
+                        <Route path="/register" element={<RegisterFormComponent />} />
+                    </Routes>
+                </AuthProvider>
+            </AlertProvider>
         </BrowserRouter>
     )
 }
